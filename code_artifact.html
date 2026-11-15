@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>تطبيق خطي | KHATTI IRAQ — نظام إدارة خطوط النقل الدراسي الشهري</title>
+  <!-- خطوط عربية هندسية فائقة الوضوح Readex Pro & IBM Plex Sans Arabic -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Readex Pro"', '"IBM Plex Sans Arabic"', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            canvas: { light: '#F8FAFC', dark: '#0B0F19' },
+            surface: { light: '#FFFFFF', dark: '#111827' },
+            brand: { DEFAULT: '#2563EB', hover: '#1D4ED8' },
+            safety: { DEFAULT: '#10B981', hover: '#059669', darkText: '#065F46' },
+          },
+          boxShadow: {
+            'ambient': '0 4px 12px -2px rgba(15, 23, 42, 0.06), 0 12px 24px -4px rgba(15, 23, 42, 0.06)',
+            'ambient-lg': '0 12px 32px -4px rgba(15, 23, 42, 0.08), 0 24px 48px -12px rgba(15, 23, 42, 0.10)',
+            'brand': '0 8px 24px -4px rgba(37, 99, 235, 0.30)',
+            'safety': '0 8px 24px -4px rgba(16, 185, 129, 0.28)',
+          }
+        }
+      }
+    };
+  </script>
+  <!-- React & ReactDOM & Babel for Single-File Standalone Execution -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body {
+      font-family: 'Readex Pro', 'IBM Plex Sans Arabic', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .gps-glide {
+      transition: all 1.15s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+  </style>
+</head>
+<body class="bg-[#F8FAFC] text-[#0F172A] antialiased selection:bg-blue-600 selection:text-white">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useMemo } = React;
+
+    // القائمة المرجعية للمدارس والجامعات
+    const IRAQ_INSTITUTIONS = [
+      { id: 'inst-1', name: 'جامعة كربلاء - مجمع فريحة', level: 'university', lat: 32.6024, lng: 44.0862 },
+      { id: 'inst-2', name: 'جامعة الزهراء (ع) للبنات', level: 'university', lat: 32.6341, lng: 44.0518 },
+      { id: 'inst-3', name: 'جامعة وارث الأنبياء (ع)', level: 'university', lat: 32.5895, lng: 44.1120 },
+      { id: 'inst-4', name: 'ثانوية المتميزين - كربلاء', level: 'high_school', lat: 32.6188, lng: 44.0195 },
+      { id: 'inst-5', name: 'إعدادية كربلاء للبنات', level: 'high_school', lat: 32.6122, lng: 44.0280 },
+      { id: 'inst-6', name: 'مدرسة الروضتين الابتدائية النموذجية', level: 'primary', lat: 32.6250, lng: 44.0095 },
+    ];
+
+    const WEEKDAYS_AR = [
+      { index: 0, full: 'الأحد' },
+      { index: 1, full: 'الإثنين' },
+      { index: 2, full: 'الثلاثاء' },
+      { index: 3, full: 'الأربعاء' },
+      { index: 4, full: 'الخميس' },
+      { index: 5, full: 'السبت (إضافي)' },
+    ];
+
+    const VEHICLE_TYPE_LABELS = {
+      sedan: { label: 'صالون خصوصي (4 ركاب)', defaultSeats: 4 },
+      suv: { label: 'دفع رباعي تاهو / سورينتو (6 ركاب)', defaultSeats: 6 },
+      starex_van: { label: 'هيونداي ستاركس / باص حديث (10 ركاب)', defaultSeats: 10 },
+      minibus: { label: 'ميني باص (14 راكباً)', defaultSeats: 14 },
+      coaster: { label: 'كوستر جامعي (22 راكباً)', defaultSeats: 22 },
+    };
+
+    // مكونات التصميم البصري (8pt Grid & WCAG AAA)
+    const OpticalCard = ({ children, className = '', elevated = false }) => (
+      <div className={`rounded-2xl bg-white dark:bg-[#111827] border border-slate-200/90 dark:border-slate-800 p-6 transition-all duration-300 ${elevated ? 'shadow-ambient-lg' : 'shadow-ambient'} ${className}`}>
+        {children}
+      </div>
+    );
+
+    const ErgonomicButton = ({ children, onClick, variant = 'primary', type = 'button', disabled = false, fullWidth = false }) => {
+      const styles = {
+        primary: 'bg-[#2563EB] hover:bg-[#1D4ED8] text-white shadow-brand',
+        safety: 'bg-[#10B981] hover:bg-[#059669] text-white shadow-safety',
+        secondary: 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-700',
+      };
+      return (
+        <button
+          type={type}
+          disabled={disabled}
+          onClick={onClick}
+          className={`min-h-[48px] px-6 py-2 rounded-xl font-semibold text-base inline-flex items-center justify-center gap-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${styles[variant]} ${fullWidth ? 'w-full' : ''}`}
+        >
+          {children}
+        </button>
+      );
+    };
+
+    const StatusBadge = ({ tone = 'blue', children }) => {
+      const tones = {
+        blue: 'bg-blue-50 text-blue-900 border-blue-200 dark:bg-blue-950/60 dark:text-blue-200 dark:border-blue-800',
+        emerald: 'bg-emerald-50 text-[#065F46] border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-200 dark:border-emerald-800',
+        amber: 'bg-amber-50 text-amber-900 border-amber-200 dark:bg-amber-950/60 dark:text-amber-200 dark:border-amber-800',
+        crimson: 'bg-red-50 text-red-900 border-red-200 dark:bg-red-950/60 dark:text-red-200 dark:border-red-800',
+        slate: 'bg-slate-100 text-slate-800 border-slate-300 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700',
+      };
+      return (
+        <span className={`inline-flex items-center gap-2 px-4 py-1 rounded-lg text-xs font-bold border ${tones[tone]}`}>
+          {children}
+        </span>
+      );
+    };
+
+    function KhattiApp() {
+      const [activePortal, setActivePortal] = useState('landing');
+      const [darkMode, setDarkMode] = useState(false);
+      const [toastMessage, setToastMessage] = useState(null);
+
+      // مركبات الأسطول الحية
+      const [fleetVehicles, setFleetVehicles] = useState([
+        {
+          id: 'gps-101',
+          driverName: 'كابتن حيدر عبد الرضا الكربلائي',
+          vehicleLabel: 'هيونداي ستاركس H1',
+          modelYear: 2023,
+          plateNumber: 'كربلاء 48291 أ',
+          imei: '864209041829104',
+          lat: 32.6145,
+          lng: 44.0312,
+          targetLat: 32.6024,
+          targetLng: 44.0862,
+          speedKmh: 54,
+          maxCapacity: 10,
+          currentOccupied: 8,
+          institutionName: 'جامعة كربلاء - مجمع فريحة',
+          operationalState: 'en_route',
+          etaMinutes: 6,
+          distanceToHomeMeters: 460,
+        },
+        {
+          id: 'gps-102',
+          driverName: 'كابتن مرتضى جاسم الشمري',
+          vehicleLabel: 'شيفروليه تاهو LTZ',
+          modelYear: 2024,
+          plateNumber: 'كربلاء 91044 ب',
+          imei: '864209049912031',
+          lat: 32.6188,
+          lng: 44.0195,
+          targetLat: 32.6188,
+          targetLng: 44.0195,
+          speedKmh: 0,
+          maxCapacity: 6,
+          currentOccupied: 6,
+          institutionName: 'ثانوية المتميزين - كربلاء',
+          operationalState: 'arrived_at_school',
+          etaMinutes: 0,
+          distanceToHomeMeters: 2150,
+        },
+        {
+          id: 'gps-103',
+          driverName: 'كابتن عمار كاظم الفتلاوي',
+          vehicleLabel: 'تويوتا كورولا الهجينة',
+          modelYear: 2022,
+          plateNumber: 'كربلاء 31805 ج',
+          imei: '864209047725190',
+          lat: 32.6290,
+          lng: 44.0410,
+          targetLat: 32.6341,
+          targetLng: 44.0518,
+          speedKmh: 92,
+          maxCapacity: 4,
+          currentOccupied: 3,
+          institutionName: 'جامعة الزهراء (ع) للبنات',
+          operationalState: 'overspeed_alert',
+          etaMinutes: 4,
+          distanceToHomeMeters: 1280,
+        },
+      ]);
+
+      // إشعارات المطابقة العمياء
+      const [matchNotifications, setMatchNotifications] = useState([
+        {
+          id: 'match-901',
+          homeDistrict: 'حي الهادي',
+          exactHomeAddress: 'حي الهادي - شارع السناتر - زقاق 14 - دار 22 (قرب جامع الهادي)',
+          studentFullName: 'أحمد مسلم عقيل العنزي (وأخوه علي)',
+          parentPrimaryPhone: '07701234567',
+          parentEmergencyPhone: '07807654321',
+          institutionName: 'ثانوية المتميزين - كربلاء',
+          studentsCount: 2,
+          studyDays: [0, 1, 2, 3, 4],
+          morningTime: '07:15',
+          returnTime: '13:30',
+          vehicleBrandModel: 'هيونداي ستاركس H1 (تبريد مركزي مضاعف)',
+          vehicleModelYear: 2023,
+          driverRating: 4.95,
+          currentOccupied: 8,
+          maxCapacity: 10,
+          estimatedMonthlyCostIqd: 140000,
+          status: 'pending_driver',
+          isContactUnmasked: false,
+        },
+      ]);
+
+      // نموذج ولي الأمر / الطالب
+      const [parentForm, setParentForm] = useState({
+        parentOrStudentName: 'مسلم عقيل العنزي',
+        primaryPhone: '07701234567',
+        emergencyBackupPhone: '07807654321',
+        studentsCount: 2,
+        homeDistrict: 'حي الهادي',
+        homeDetailedAddress: 'شارع السناتر - مجاور مدرسة الروضتين',
+        homeLat: 32.6085,
+        homeLng: 44.0345,
+        selectedInstitutionId: 'inst-4',
+        educationLevel: 'high_school',
+        genderPreference: 'male_only',
+        studyDays: [0, 1, 2, 3, 4],
+        morningTime: '07:30',
+        returnTime: '13:30',
+        optionalVehicleType: '',
+        optionalMinModelYear: '2021',
+        hasLiveGpsSubscription: false,
+      });
+
+      // سجل وثائق السائقين السرية لدى الأدمن
+      const [driverKycList, setDriverKycList] = useState([
+        {
+          id: 'kyc-701',
+          fullName: 'كابتن حيدر عبد الرضا الكربلائي',
+          primaryPhone: '07704829184',
+          emergencyPhone: '07804829111',
+          residentialDistrict: 'حي الموظفين - كربلاء',
+          vehicleLabel: 'هيونداي ستاركس H1 - أبيض لؤلؤي',
+          manufactureYear: 2023,
+          maxCapacity: 10,
+          nationalIdNumber: '198614029381',
+          drivingLicenseNumber: 'KRB-2024-88412',
+          vehicleRegistrationNumber: 'SNW-9928174',
+          nationalIdFrontPath: 'driver_kyc_documents/drv-101/national_id_front.jpg',
+          verificationStatus: 'approved',
+        },
+        {
+          id: 'kyc-702',
+          fullName: 'كابتن وسام رحيم الحسيني',
+          primaryPhone: '07815543210',
+          emergencyPhone: '07715543299',
+          residentialDistrict: 'حي العباس - كربلاء',
+          vehicleLabel: 'كيا سورينتو 2024 - فضي',
+          manufactureYear: 2024,
+          maxCapacity: 6,
+          nationalIdNumber: '199023841102',
+          drivingLicenseNumber: 'KRB-2025-19204',
+          vehicleRegistrationNumber: 'SNW-4410928',
+          nationalIdFrontPath: 'driver_kyc_documents/drv-205/national_id_front.jpg',
+          verificationStatus: 'pending',
+        },
+      ]);
+
+      const [newDriverForm, setNewDriverForm] = useState({
+        fullName: '',
+        primaryPhone: '',
+        emergencyPhone: '',
+        residentialDistrict: 'حي الهادي',
+        vehicleType: 'starex_van',
+        brandModel: 'هيونداي ستاركس H1',
+        manufactureYear: 2023,
+        color: 'أبيض',
+        maxCapacity: 10,
+        nationalIdNumber: '',
+        drivingLicenseNumber: '',
+        vehicleRegistrationNumber: '',
+      });
+
+      // تحريك سلس للمركبات على الخريطة الحية
+      useEffect(() => {
+        const timer = setInterval(() => {
+          setFleetVehicles((prev) =>
+            prev.map((v) => {
+              if (v.operationalState === 'arrived_at_school') return v;
+              const deltaLat = (v.targetLat - v.lat) * 0.08;
+              const deltaLng = (v.targetLng - v.lng) * 0.08;
+              const nextDist = Math.max(90, Math.round(v.distanceToHomeMeters - 15));
+              return {
+                ...v,
+                lat: Number((v.lat + deltaLat).toFixed(5)),
+                lng: Number((v.lng + deltaLng).toFixed(5)),
+                distanceToHomeMeters: nextDist,
+              };
+            })
+          );
+        }, 1200);
+        return () => clearInterval(timer);
+      }, []);
+
+      const showNotice = (msg) => {
+        setToastMessage(msg);
+        setTimeout(() => setToastMessage(null), 5000);
+      };
+
+      const monthlyActualDeliveryDays = useMemo(() => parentForm.studyDays.length * 4, [parentForm.studyDays]);
+
+      // إجراءات المطابقة العمياء
+      const handleDriverInitialApprove = (matchId) => {
+        setMatchNotifications((prev) =>
+          prev.map((m) => (m.id === matchId ? { ...m, status: 'offered_to_student' } : m))
+        );
+        showNotice('تمت الموافقة المبدئية على طلب الخط (مع بقاء هوية الطالب محجوبة). تم إرسال عرض المركبة لولي الأمر للتثبيت.');
+      };
+
+      const handleDriverPass = (matchId) => {
+        setMatchNotifications((prev) =>
+          prev.map((m) => (m.id === matchId ? { ...m, status: 'rejected_re_search' } : m))
+        );
+        showNotice('تم تجاوز الطلب، وسيقوم محرك المطابقة بالبحث عن مركبة أخرى.');
+      };
+
+      const handleStudentConfirmLine = (matchId) => {
+        setMatchNotifications((prev) =>
+          prev.map((m) => {
+            if (m.id !== matchId) return m;
+            const newOccupied = Math.min(m.maxCapacity, m.currentOccupied + m.studentsCount);
+            return {
+              ...m,
+              currentOccupied: newOccupied,
+              status: newOccupied >= m.maxCapacity ? 'active_contract' : 'student_confirmed',
+              isContactUnmasked: true,
+            };
+          })
+        );
+        showNotice('تم تثبيت الخط بنجاح! تم تحديث المقاعد المحجوزة تلقائياً وكشف أرقام الهواتف والموقع الدقيق.');
+      };
+
+      const handleStudentRejectAndResearh = (matchId) => {
+        setMatchNotifications((prev) =>
+          prev.map((m) =>
+            m.id === matchId
+              ? {
+                  ...m,
+                  status: 'pending_driver',
+                  driverRating: 4.98,
+                  vehicleBrandModel: 'شيفروليه تاهو LTZ (تبريد مركزي)',
+                  vehicleModelYear: 2024,
+                  currentOccupied: 4,
+                  maxCapacity: 6,
+                  estimatedMonthlyCostIqd: 160000,
+                  isContactUnmasked: false,
+                }
+              : m
+          )
+        );
+        showNotice('تم تجاوز العرض الحالي وإعادة حسابك لمحرك البحث الجغرافي لإيجاد سائق بديل.');
+      };
+
+      const handleCreateStudentLineRequest = (e) => {
+        e.preventDefault();
+        if (parentForm.primaryPhone.trim() === parentForm.emergencyBackupPhone.trim()) {
+          showNotice('تنبيه أمني: يجب أن يكون رقم الهاتف البديل للطوارئ مختلفاً عن رقم الهاتف الأساسي.');
+          return;
+        }
+        const inst = IRAQ_INSTITUTIONS.find((i) => i.id === parentForm.selectedInstitutionId) || IRAQ_INSTITUTIONS[0];
+        const calculatedCost = Math.round(75000 * parentForm.studentsCount * (parentForm.studyDays.length / 5));
+
+        const newMatch = {
+          id: `match-${Date.now()}`,
+          homeDistrict: parentForm.homeDistrict,
+          exactHomeAddress: `${parentForm.homeDistrict} - ${parentForm.homeDetailedAddress}`,
+          studentFullName: parentForm.parentOrStudentName,
+          parentPrimaryPhone: parentForm.primaryPhone,
+          parentEmergencyPhone: parentForm.emergencyBackupPhone,
+          institutionName: inst.name,
+          studentsCount: parentForm.studentsCount,
+          studyDays: parentForm.studyDays,
+          morningTime: parentForm.morningTime,
+          returnTime: parentForm.returnTime,
+          vehicleBrandModel: 'هيونداي ستاركس H1 (تبريد مركزي)',
+          vehicleModelYear: Number(parentForm.optionalMinModelYear) || 2023,
+          driverRating: 4.95,
+          currentOccupied: 8,
+          maxCapacity: 10,
+          estimatedMonthlyCostIqd: calculatedCost,
+          status: 'pending_driver',
+          isContactUnmasked: false,
+        };
+        setMatchNotifications((prev) => [newMatch, ...prev]);
+        showNotice('تم تسجيل طلب الخط بنجاح! أرسل محرك المطابقة إشعاراً أعمى للسائقين المطابقين في منطقتك بدون كشف هويتك.');
+      };
+
+      const handleDriverRegistrationSubmit = (e) => {
+        e.preventDefault();
+        const createdRecord = {
+          id: `kyc-${Date.now()}`,
+          fullName: newDriverForm.fullName || 'كابتن جديد قيد التدقيق',
+          primaryPhone: newDriverForm.primaryPhone || '07709998877',
+          emergencyPhone: newDriverForm.emergencyPhone || '07809998877',
+          residentialDistrict: newDriverForm.residentialDistrict,
+          vehicleLabel: `${newDriverForm.brandModel} (${newDriverForm.color})`,
+          manufactureYear: Number(newDriverForm.manufactureYear),
+          maxCapacity: Number(newDriverForm.maxCapacity),
+          nationalIdNumber: newDriverForm.nationalIdNumber || '198810928374',
+          drivingLicenseNumber: newDriverForm.drivingLicenseNumber || 'KRB-2026-55120',
+          vehicleRegistrationNumber: newDriverForm.vehicleRegistrationNumber || 'SNW-8821900',
+          nationalIdFrontPath: 'driver_kyc_documents/encrypted/national_id_front.jpg',
+          verificationStatus: 'pending',
+        };
+        setDriverKycList((prev) => [createdRecord, ...prev]);
+        showNotice('تم تشفير ورفع المستمسكات الرسمية إلى الحافظة السرية الخاصة بالأدمن فقط.');
+      };
+
+      return (
+        <div className={darkMode ? 'dark' : ''}>
+          <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B0F19] text-[#0F172A] dark:text-[#F8FAFC] transition-colors duration-300">
+            {/* شريط التنقل العلوي */}
+            <header className="sticky top-0 z-50 backdrop-blur-md bg-white/90 dark:bg-[#111827]/90 border-b border-slate-200 dark:border-slate-800">
+              <div className="max-w-7xl mx-auto px-6 py-4 flex flex-wrap items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl bg-[#2563EB] flex items-center justify-center text-white font-bold text-xl shadow-brand">
+                    خ
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-lg">خطي | KHATTI IRAQ</span>
+                      <StatusBadge tone="emerald">النسخة التفاعلية الكاملة</StatusBadge>
+                    </div>
+                    <p className="text-xs text-slate-600 dark:text-slate-400">
+                      منظومة إدارة خطوط النقل الدراسي الشهري للمدارس والجامعات في العراق
+                    </p>
+                  </div>
+                </div>
+
+                <nav className="flex flex-wrap items-center gap-2">
+                  <button
+                    onClick={() => setActivePortal('landing')}
+                    className={`min-h-[48px] px-4 py-2 rounded-xl text-sm font-bold transition-all ${
+                      activePortal === 'landing'
+                        ? 'bg-[#2563EB] text-white shadow-brand'
+                        : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200'
+                    }`}
+                  >
+                    الرئيسية
+                  </button>
+                  <button
+                    onClick={() => setActivePortal('student_parent')}
+                    className={`min-h-[48px] px-4 py-2 rounded-xl text-sm font-bold transition-all ${
+                      activePortal === 'student_parent'
+                        ? 'bg-[#2563EB] text-white shadow-brand'
+                        : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200'
+                    }`}
+                  >
+                    بوابة الطالب / ولي الأمر
+                  </button>
+                  <button
+                    onClick={() => setActivePortal('driver')}
+                    className={`min-h-[48px] px-4 py-2 rounded-xl text-sm font-bold transition-all ${
+                      activePortal === 'driver'
+                        ? 'bg-[#2563EB] text-white shadow-brand'
+                        : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200'
+                    }`}
+                  >
+                    بوابة السائق والوثائق
+                  </button>
+                  <button
+                    onClick={() => setActivePortal('admin')}
+                    className={`min-h-[48px] px-4 py-2 rounded-xl text-sm font-bold transition-all ${
+                      activePortal === 'admin'
+                        ? 'bg-[#2563EB] text-white shadow-brand'
+                        : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200'
+                    }`}
+                  >
+                    غرفة القيادة الحية (الشركة)
+                  </button>
+                  <button
+                    onClick={() => setDarkMode(!darkMode)}
+                    className="min-h-[48px] px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-sm font-semibold border border-slate-300 dark:border-slate-700"
+                  >
+                    {darkMode ? '☀️ نهاري' : '🌙 ليلي'}
+                  </button>
+                </nav>
+              </div>
+            </header>
+
+            {toastMessage && (
+              <div className="fixed bottom-6 left-6 right-6 md:left-auto md:right-8 md:max-w-xl z-50 bg-[#0F172A] text-white border border-emerald-500/50 rounded-2xl p-4 shadow-ambient-lg flex items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
+                  <span className="w-4 h-4 rounded-full bg-[#10B981] shrink-0 animate-pulse" />
+                  <p className="text-sm font-medium leading-relaxed">{toastMessage}</p>
+                </div>
+                <button onClick={() => setToastMessage(null)} className="px-3 py-1 text-xs bg-slate-800 rounded-lg">
+                  إغلاق
+                </button>
+              </div>
+            )}
+
+            <main className="max-w-7xl mx-auto px-6 py-10 space-y-12">
+              {/* الواجهة الرئيسية */}
+              {activePortal === 'landing' && (
+                <div className="space-y-12">
+                  <OpticalCard elevated className="p-8 md:p-12">
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                      <div className="lg:col-span-7 space-y-6">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <StatusBadge tone="blue">مطابقة عمياء تحمي خصوصية العائلات</StatusBadge>
+                          <StatusBadge tone="emerald">تتبع جغرافي حي عبر شرائح GPS</StatusBadge>
+                        </div>
+                        <h1 className="text-2xl md:text-4xl font-extrabold leading-tight">
+                          منظومة «خطي» لإدارة خطوط النقل الدراسي الشهري في العراق
+                        </h1>
+                        <p className="text-base text-slate-600 dark:text-slate-300 leading-relaxed">
+                          نظام ذكي متكامل يربط طلاب المدارس والجامعات وأولياء أمورهم بسائقي الخطوط الموثقين في منطقتهم السكنية، مع جدولة مرنة لأيام الدوام الفعلي، وعزل تام للمستمسكات الرسمية، وتتبع مباشر للسيارات على الخريطة.
+                        </p>
+                        <div className="flex flex-wrap gap-4 pt-2">
+                          <ErgonomicButton variant="primary" onClick={() => setActivePortal('student_parent')}>
+                            تصفح بوابة الطالب / ولي الأمر
+                          </ErgonomicButton>
+                          <ErgonomicButton variant="safety" onClick={() => setActivePortal('driver')}>
+                            تصفح بوابة السائق والكابتن
+                          </ErgonomicButton>
+                          <ErgonomicButton variant="secondary" onClick={() => setActivePortal('admin')}>
+                            تصفح غرفة عمليات الشركة (Admin)
+                          </ErgonomicButton>
+                        </div>
+                      </div>
+
+                      <div className="lg:col-span-5 bg-slate-50 dark:bg-slate-900/90 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 space-y-4">
+                        <h2 className="text-lg font-bold">كيف تعمل دورة المطابقة العمياء؟</h2>
+                        <ol className="space-y-4 text-sm">
+                          <li className="flex items-start gap-4">
+                            <span className="w-8 h-8 rounded-lg bg-blue-600 text-white font-bold flex items-center justify-center shrink-0">1</span>
+                            <div>
+                              <p className="font-bold">مطابقة جغرافية وزمنية ذكية</p>
+                              <p className="text-slate-600 dark:text-slate-400">جمع الطلاب المتقاربين سكنياً وفي نفس المدرسة أو الجامعة مع تطابق أيام الدوام ومواصفات السيارة.</p>
+                            </div>
+                          </li>
+                          <li className="flex items-start gap-4">
+                            <span className="w-8 h-8 rounded-lg bg-blue-600 text-white font-bold flex items-center justify-center shrink-0">2</span>
+                            <div>
+                              <p className="font-bold">إشعار مبدئي للسائق بدون كشف الهوية</p>
+                              <p className="text-slate-600 dark:text-slate-400">يرى السائق اسم الحي والمدرسة وأيام الدوام فقط دون اسم الطالب أو رقم هاتفه.</p>
+                            </div>
+                          </li>
+                          <li className="flex items-start gap-4">
+                            <span className="w-8 h-8 rounded-lg bg-emerald-600 text-white font-bold flex items-center justify-center shrink-0">3</span>
+                            <div>
+                              <p className="font-bold">تثبيت الخط وكشف أرقام التواصل</p>
+                              <p className="text-slate-600 dark:text-slate-400">عند موافقة الطالب وتثبيت الخط واكتمال العدد، تُكشف أرقام الهواتف وموقع المنزل الدقيق.</p>
+                            </div>
+                          </li>
+                        </ol>
+                      </div>
+                    </div>
+                  </OpticalCard>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <OpticalCard className="space-y-4">
+                      <StatusBadge tone="blue">1. حساب الطالب / ولي الأمر</StatusBadge>
+                      <h3 className="text-lg font-bold">حجز الخط ومصفوفة الدوام والتتبع الحي</h3>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">تحديد موقع المنزل على الخريطة، اختيار أيام الدوام الفعلي، فلترة نوع وموديل السيارة، والاشتراك في الخريطة الحية.</p>
+                      <ErgonomicButton variant="primary" fullWidth onClick={() => setActivePortal('student_parent')}>
+                        معاينة واجهة ولي الأمر
+                      </ErgonomicButton>
+                    </OpticalCard>
+
+                    <OpticalCard className="space-y-4">
+                      <StatusBadge tone="emerald">2. حساب السائق / الكابتن</StatusBadge>
+                      <h3 className="text-lg font-bold">رفع المستمسكات السرية وإدارة المقاعد</h3>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">رفع البطاقة الموحدة وإجازة السوق والسنوية في مخزن مشفر لا يراه إلا الأدمن، واستقبال طلبات الخطوط.</p>
+                      <ErgonomicButton variant="safety" fullWidth onClick={() => setActivePortal('driver')}>
+                        معاينة واجهة السائق
+                      </ErgonomicButton>
+                    </OpticalCard>
+
+                    <OpticalCard className="space-y-4">
+                      <StatusBadge tone="amber">3. غرفة القيادة والتحكم للشركة</StatusBadge>
+                      <h3 className="text-lg font-bold">مراقبة الأسطول الحية وتوثيق الحسابات</h3>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">خريطة عمليات حية لجميع السيارات المربوطة بشرائح GPS، تنبيهات السرعة، واعتماد وثائق السائقين.</p>
+                      <ErgonomicButton variant="secondary" fullWidth onClick={() => setActivePortal('admin')}>
+                        معاينة لوحة تحكم الشركة
+                      </ErgonomicButton>
+                    </OpticalCard>
+                  </div>
+                </div>
+              )}
+
+              {/* بوابة الطالب / ولي الأمر */}
+              {activePortal === 'student_parent' && (
+                <div className="space-y-8">
+                  <div className="flex flex-wrap items-center justify-between gap-4">
+                    <div>
+                      <h1 className="text-2xl font-extrabold">بوابة الطالب وولي الأمر — حجز الخط الشهري والتتبع الحي</h1>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">بياناتك وأرقام هواتفك وموقع منزلك الدقيق محمية ولا تظهر للسائق إلا بعد موافقتك وتثبيت الخط.</p>
+                    </div>
+                    <StatusBadge tone="emerald">أيام التوصيل الفعلية شهرياً: {monthlyActualDeliveryDays} يوماً</StatusBadge>
+                  </div>
+
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    <div className="lg:col-span-7">
+                      <OpticalCard elevated className="space-y-6">
+                        <h2 className="text-xl font-bold border-b border-slate-200 dark:border-slate-800 pb-4">1. استمارة طلب خط دراسي شهري</h2>
+                        <form onSubmit={handleCreateStudentLineRequest} className="space-y-6">
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="md:col-span-2 space-y-2">
+                              <label className="block text-sm font-bold">اسم ولي الأمر أو الطالب الكامل *</label>
+                              <input type="text" required value={parentForm.parentOrStudentName} onChange={(e) => setParentForm({ ...parentForm, parentOrStudentName: e.target.value })} className="w-full min-h-[48px] px-4 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900" />
+                            </div>
+                            <div className="space-y-2">
+                              <label className="block text-sm font-bold">عدد الطلاب ضمن الحساب *</label>
+                              <input type="number" min="1" max="8" required value={parentForm.studentsCount} onChange={(e) => setParentForm({ ...parentForm, studentsCount: Number(e.target.value) })} className="w-full min-h-[48px] px-4 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900" />
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 rounded-2xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900">
+                            <div className="space-y-2">
+                              <label className="block text-sm font-bold text-blue-950 dark:text-blue-200">رقم الهاتف الأساسي *</label>
+                              <input type="tel" required value={parentForm.primaryPhone} onChange={(e) => setParentForm({ ...parentForm, primaryPhone: e.target.value })} className="w-full min-h-[48px] px-4 rounded-xl border border-blue-300 dark:border-blue-800 bg-white dark:bg-slate-900" />
+                            </div>
+                            <div className="space-y-2">
+                              <label className="block text-sm font-bold text-red-700 dark:text-red-300">رقم هاتف بديل إلزامي للطوارئ *</label>
+                              <input type="tel" required value={parentForm.emergencyBackupPhone} onChange={(e) => setParentForm({ ...parentForm, emergencyBackupPhone: e.target.value })} className="w-full min-h-[48px] px-4 rounded-xl border border-red-300 dark:border-red-800 bg-white dark:bg-slate-900" />
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <label className="block text-sm font-bold">الحي السكني *</label>
+                              <input type="text" required value={parentForm.homeDistrict} onChange={(e) => setParentForm({ ...parentForm, homeDistrict: e.target.value })} className="w-full min-h-[48px] px-4 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900" />
+                            </div>
+                            <div className="space-y-2">
+                              <label className="block text-sm font-bold">العنوان الدقيق (محجوب حتى التثبيت) *</label>
+                              <input type="text" required value={parentForm.homeDetailedAddress} onChange={(e) => setParentForm({ ...parentForm, homeDetailedAddress: e.target.value })} className="w-full min-h-[48px] px-4 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900" />
+                            </div>
+                          </div>
+
+                          {/* خريطة تحديد موقع المنزل */}
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                              <label className="text-sm font-bold">تحديد الموقع الدقيق للمنزل على الخريطة (اضغط لتحريك الدبوس)</label>
+                              <span className="text-xs font-mono text-blue-600">{parentForm.homeLat.toFixed(4)}, {parentForm.homeLng.toFixed(4)}</span>
+                            </div>
+                            <div
+                              onClick={(e) => {
+                                const rect = e.currentTarget.getBoundingClientRect();
+                                const relX = (e.clientX - rect.left) / rect.width;
+                                const relY = (e.clientY - rect.top) / rect.height;
+                                setParentForm({
+                                  ...parentForm,
+                                  homeLat: Number((32.59 + (1 - relY) * 0.05).toFixed(5)),
+                                  homeLng: Number((44.0 + relX * 0.08).toFixed(5)),
+                                });
+                              }}
+                              className="relative h-48 w-full rounded-2xl bg-slate-900 overflow-hidden cursor-crosshair border-2 border-blue-500/40 select-none"
+                            >
+                              <div className="absolute inset-0 opacity-25" style={{ backgroundImage: 'linear-gradient(to right, #3b82f6 1px, transparent 1px), linear-gradient(to bottom, #3b82f6 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
+                              <div className="absolute top-4 right-4 bg-slate-950/85 text-white px-4 py-2 rounded-lg text-xs border border-slate-700">
+                                📍 موقع المنزل ({parentForm.homeDistrict})
+                              </div>
+                              <div
+                                style={{
+                                  left: `${((parentForm.homeLng - 44.0) / 0.08) * 100}%`,
+                                  top: `${(1 - (parentForm.homeLat - 32.59) / 0.05) * 100}%`,
+                                }}
+                                className="absolute -translate-x-1/2 -translate-y-1/2 transition-all duration-200"
+                              >
+                                <div className="w-8 h-8 rounded-full bg-[#2563EB] border-2 border-white text-white flex items-center justify-center shadow-lg">🏠</div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="space-y-2">
+                              <label className="block text-sm font-bold">المدرسة / الجامعة *</label>
+                              <select value={parentForm.selectedInstitutionId} onChange={(e) => setParentForm({ ...parentForm, selectedInstitutionId: e.target.value })} className="w-full min-h-[48px] px-4 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900">
+                                {IRAQ_INSTITUTIONS.map((inst) => (
+                                  <option key={inst.id} value={inst.id}>{inst.name}</option>
+                                ))}
+                              </select>
+                            </div>
+                            <div className="space-y-2">
+                              <label className="block text-sm font-bold">المرحلة الدراسية *</label>
+                              <select value={parentForm.educationLevel} onChange={(e) => setParentForm({ ...parentForm, educationLevel: e.target.value })} className="w-full min-h-[48px] px-4 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900">
+                                <option value="primary">ابتدائي</option>
+                                <option value="middle">متوسط</option>
+                                <option value="high_school">إعدادي / ثانوي</option>
+                                <option value="university">جامعي</option>
+                              </select>
+                            </div>
+                            <div className="space-y-2">
+                              <label className="block text-sm font-bold">الجنس *</label>
+                              <select value={parentForm.genderPreference} onChange={(e) => setParentForm({ ...parentForm, genderPreference: e.target.value })} className="w-full min-h-[48px] px-4 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900">
+                                <option value="male_only">ذكور فقط</option>
+                                <option value="female_only">إناث فقط</option>
+                                <option value="mixed">مختلط</option>
+                              </select>
+                            </div>
+                          </div>
+
+                          {/* جدول الدوام الأسبوعي */}
+                          <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-4">
+                            <div className="flex flex-wrap items-center justify-between gap-2">
+                              <h3 className="text-base font-bold">2. جدول أيام الدوام الفعلي في الأسبوع</h3>
+                              <span className="text-xs text-emerald-700 dark:text-emerald-400 font-bold">{parentForm.studyDays.length} أيام أسبوعياً ({monthlyActualDeliveryDays} يوماً بالشهر)</span>
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                              {WEEKDAYS_AR.map((day) => {
+                                const selected = parentForm.studyDays.includes(day.index);
+                                return (
+                                  <button
+                                    key={day.index}
+                                    type="button"
+                                    onClick={() => {
+                                      const exists = parentForm.studyDays.includes(day.index);
+                                      if (exists && parentForm.studyDays.length === 1) return;
+                                      setParentForm({
+                                        ...parentForm,
+                                        studyDays: exists ? parentForm.studyDays.filter((d) => d !== day.index) : [...parentForm.studyDays, day.index].sort(),
+                                      });
+                                    }}
+                                    className={`min-h-[48px] px-4 py-2 rounded-xl text-sm font-bold border transition-all ${
+                                      selected ? 'bg-[#2563EB] text-white border-[#2563EB]' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700'
+                                    }`}
+                                  >
+                                    {selected ? '✓ ' : ''}{day.full}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div>
+                                <label className="block text-sm font-bold mb-1">وقت الذهاب صباحاً *</label>
+                                <input type="time" value={parentForm.morningTime} onChange={(e) => setParentForm({ ...parentForm, morningTime: e.target.value })} className="w-full min-h-[48px] px-4 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800" />
+                              </div>
+                              <div>
+                                <label className="block text-sm font-bold mb-1">وقت العودة ظهراً *</label>
+                                <input type="time" value={parentForm.returnTime} onChange={(e) => setParentForm({ ...parentForm, returnTime: e.target.value })} className="w-full min-h-[48px] px-4 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800" />
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* التفضيلات الاختيارية */}
+                          <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-4">
+                            <h3 className="text-base font-bold">3. التفضيلات الاختيارية للسيارة والتتبع الحي</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div>
+                                <label className="block text-sm font-semibold mb-1">نوع السيارة المطلوبة (اختياري)</label>
+                                <select value={parentForm.optionalVehicleType} onChange={(e) => setParentForm({ ...parentForm, optionalVehicleType: e.target.value })} className="w-full min-h-[48px] px-4 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800">
+                                  <option value="">أي سيارة حديثة مكيفة</option>
+                                  <option value="sedan">صالون خصوصي (4 طلاب)</option>
+                                  <option value="suv">دفع رباعي تاهو / سورينتو (6 طلاب)</option>
+                                  <option value="starex_van">ستاركس / باص حديث (10 طلاب)</option>
+                                </select>
+                              </div>
+                              <div>
+                                <label className="block text-sm font-semibold mb-1">موديل السيارة الأدنى (اختياري)</label>
+                                <input type="number" min="2010" max="2027" value={parentForm.optionalMinModelYear} onChange={(e) => setParentForm({ ...parentForm, optionalMinModelYear: e.target.value })} className="w-full min-h-[48px] px-4 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800" />
+                              </div>
+                            </div>
+                          </div>
+
+                          <ErgonomicButton type="submit" variant="primary" fullWidth>
+                            إرسال الطلب والبحث عن خط مطابق
+                          </ErgonomicButton>
+                        </form>
+                      </OpticalCard>
+                    </div>
+
+                    {/* العمود الأيسر: الإشعار التفاعلي + الخريطة الحية */}
+                    <div className="lg:col-span-5 space-y-6">
+                      {matchNotifications.map((match) => (
+                        <OpticalCard key={match.id} elevated className="space-y-4">
+                          <div className="flex items-center justify-between">
+                            <StatusBadge tone={match.isContactUnmasked ? 'emerald' : 'blue'}>
+                              {match.status === 'pending_driver' && 'بانتظار موافقة السائق المبدئية'}
+                              {match.status === 'offered_to_student' && 'توفّر خط مطابق — بانتظار تثبيتك'}
+                              {match.isContactUnmasked && 'تم تثبيت الخط وتفعيل العقد الشهري'}
+                            </StatusBadge>
+                            <span className="text-sm font-bold text-amber-600">★ {match.driverRating}</span>
+                          </div>
+
+                          <h3 className="text-lg font-bold">{match.vehicleBrandModel} — موديل {match.vehicleModelYear}</h3>
+                          <p className="text-sm text-slate-600 dark:text-slate-300">المسار: من <strong>{match.homeDistrict}</strong> إلى <strong>{match.institutionName}</strong></p>
+
+                          <div className="grid grid-cols-2 gap-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-900 text-sm">
+                            <div>
+                              <span className="text-xs text-slate-500 block">عدد الركاب الحاليين</span>
+                              <span className="font-bold">{match.currentOccupied} من {match.maxCapacity} مقاعد</span>
+                            </div>
+                            <div>
+                              <span className="text-xs text-slate-500 block">الاشتراك الشهري التقديري</span>
+                              <span className="font-bold text-[#065F46] dark:text-emerald-400">{match.estimatedMonthlyCostIqd.toLocaleString()} د.ع</span>
+                            </div>
+                          </div>
+
+                          <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/50 text-xs space-y-1">
+                            {match.isContactUnmasked ? (
+                              <>
+                                <p className="font-bold text-emerald-700 dark:text-emerald-400">🔓 تم تثبيت الخط وكشف بيانات السائق:</p>
+                                <p>اسم السائق: كابتن حيدر عبد الرضا الكربلائي</p>
+                                <p>رقم الهاتف: 07704829184 | رقم اللوحة: كربلاء 48291 أ</p>
+                              </>
+                            ) : (
+                              <p className="text-slate-600 dark:text-slate-400">🔒 الخصوصية مفعلة: لا يرى السائق اسمك أو رقم هاتفك إلا بعد ضغطك على «موافق وتثبيت الخط».</p>
+                            )}
+                          </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                            <ErgonomicButton variant="safety" onClick={() => handleStudentConfirmLine(match.id)} disabled={match.isContactUnmasked}>
+                              موافق وتثبيت الخط
+                            </ErgonomicButton>
+                            <ErgonomicButton variant="secondary" onClick={() => handleStudentRejectAndResearh(match.id)}>
+                              تجاوز / ابحث مجدداً
+                            </ErgonomicButton>
+                          </div>
+                        </OpticalCard>
+                      ))}
+
+                      {/* السياج الجغرافي */}
+                      <OpticalCard className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <h3 className="text-base font-bold">إشعارات السياج الجغرافي الذكي (Geofencing)</h3>
+                          <StatusBadge tone="emerald">تلقائي</StatusBadge>
+                        </div>
+                        <div className="p-4 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-sm">
+                          <p className="font-bold text-amber-950 dark:text-amber-200">🔔 السيارة تقترب من المنزل الآن (على بعد {fleetVehicles[0].distanceToHomeMeters} متر)</p>
+                        </div>
+                        <div className="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-sm">
+                          <p className="font-bold text-[#065F46] dark:text-emerald-200">✅ وصل الطالب بسلام إلى ثانوية المتميزين - كربلاء</p>
+                        </div>
+                      </OpticalCard>
+
+                      {/* الخريطة الحية لولي الأمر (Paid Add-on) */}
+                      <OpticalCard elevated className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <h3 className="text-base font-bold">التتبع المباشر لسيارة الخط على الخريطة</h3>
+                          <StatusBadge tone={parentForm.hasLiveGpsSubscription ? 'emerald' : 'slate'}>
+                            {parentForm.hasLiveGpsSubscription ? 'مشترك في الخريطة الحية' : 'الحالة النصية فقط'}
+                          </StatusBadge>
+                        </div>
+
+                        {!parentForm.hasLiveGpsSubscription ? (
+                          <div className="p-6 rounded-2xl bg-slate-900 text-white space-y-4">
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs text-slate-300">حالة الخط الآن:</span>
+                              <span className="px-3 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 text-xs font-bold">السائق في الطريق • يصل خلال {fleetVehicles[0].etaMinutes} دقائق</span>
+                            </div>
+                            <p className="text-xs text-slate-300 leading-relaxed">
+                              اشترك في باقة التتبع الحي لفتح الخريطة المباشرة ومشاهدة تحرك سيارة الخط على الشارع وسرعتها الحالية لحظة بلحظة.
+                            </p>
+                            <ErgonomicButton variant="primary" fullWidth onClick={() => { setParentForm({ ...parentForm, hasLiveGpsSubscription: true }); showNotice('تم تفعيل اشتراك الخريطة الحية لولي الأمر بنجاح!'); }}>
+                              تفعيل الخريطة الحية الآن (+10,000 د.ع شهرياً)
+                            </ErgonomicButton>
+                          </div>
+                        ) : (
+                          <div className="space-y-4">
+                            <div className="relative h-64 rounded-2xl bg-[#0B0F19] border border-blue-500/40 overflow-hidden">
+                              <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'linear-gradient(to right, #2563EB 1px, transparent 1px), linear-gradient(to bottom, #2563EB 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
+                              <div className="absolute left-[18%] top-[68%] text-xs bg-slate-900/90 text-white px-3 py-1 rounded-lg border border-slate-700">🏠 المنزل</div>
+                              <div className="absolute right-[12%] top-[18%] text-xs bg-emerald-950/90 text-emerald-200 px-3 py-1 rounded-lg border border-emerald-700">🎓 المدرسة</div>
+                              <div
+                                style={{
+                                  left: `${45 + ((fleetVehicles[0].lng - 44.03) * 400) % 30}%`,
+                                  top: `${50 - ((fleetVehicles[0].lat - 32.60) * 400) % 25}%`,
+                                }}
+                                className="absolute gps-glide"
+                              >
+                                <div className="px-4 py-1.5 rounded-full bg-[#2563EB] text-white text-xs font-bold shadow-brand flex items-center gap-2">
+                                  <span>🚐</span>
+                                  <span>{fleetVehicles[0].speedKmh} كم/س</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </OpticalCard>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* بوابة السائق */}
+              {activePortal === 'driver' && (
+                <div className="space-y-8">
+                  <div className="flex flex-wrap items-center justify-between gap-4">
+                    <div>
+                      <h1 className="text-2xl font-extrabold">بوابة السائق / مالك المركبة — المستمسكات السرية وطلبات الخطوط</h1>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">تُحفظ الوثائق الرسمية في مخزن مشفر لا يطلع عليه إلا أدمن الشركة حصراً.</p>
+                    </div>
+                    <StatusBadge tone="blue">عزل تام للمستمسكات عن المستخدمين</StatusBadge>
+                  </div>
+
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    <div className="lg:col-span-5 space-y-6">
+                      <OpticalCard elevated className="space-y-4">
+                        <h2 className="text-lg font-bold">إشعارات المطابقة المبدئية للسائق (Blind Matching)</h2>
+                        {matchNotifications.map((item) => (
+                          <div key={item.id} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-4">
+                            <div className="p-4 rounded-xl bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-900 text-sm leading-relaxed">
+                              «يوجد طالب (عدد: <strong>{item.studentsCount}</strong>) من منطقة [<strong>{item.homeDistrict}</strong>] إلى [<strong>{item.institutionName}</strong>]، أيام الدوام [<strong>{item.studyDays.length} أيام</strong>]، هل توافق مبدئياً ليقوم النظام بالبحث عن باقي الركاب لإكمال الطاقة الاستيعابية لسيارتك؟»
+                            </div>
+
+                            {item.isContactUnmasked ? (
+                              <div className="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-300 text-xs space-y-1">
+                                <p className="font-bold text-[#065F46]">✅ تم تثبيت الخط وكشف بيانات الطالب:</p>
+                                <p>الاسم: {item.studentFullName}</p>
+                                <p>هاتف ولي الأمر: {item.parentPrimaryPhone} | بديل: {item.parentEmergencyPhone}</p>
+                                <p>العنوان الدقيق: {item.exactHomeAddress}</p>
+                              </div>
+                            ) : (
+                              <div className="p-3 rounded-xl bg-slate-200/70 dark:bg-slate-800 text-xs">
+                                🔒 اسم الطالب ورقم هاتفه وموقع المنزل الدقيق محجوبة حتى يثبت الطالب الخط.
+                              </div>
+                            )}
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                              <ErgonomicButton variant="safety" onClick={() => handleDriverInitialApprove(item.id)} disabled={item.status !== 'pending_driver'}>
+                                موافق مبدئياً - ابحث عن البقية
+                              </ErgonomicButton>
+                              <ErgonomicButton variant="secondary" onClick={() => handleDriverPass(item.id)}>
+                                اعتذار / تجاوز
+                              </ErgonomicButton>
+                            </div>
+                          </div>
+                        ))}
+                      </OpticalCard>
+                    </div>
+
+                    <div className="lg:col-span-7">
+                      <OpticalCard elevated className="space-y-6">
+                        <h2 className="text-xl font-bold border-b border-slate-200 dark:border-slate-800 pb-4">تسجيل السائق ورفع المستمسكات السرية (للأدمن فقط)</h2>
+                        <form onSubmit={handleDriverRegistrationSubmit} className="space-y-6">
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                              <label className="block text-sm font-bold mb-1">الاسم الكامل للسائق *</label>
+                              <input type="text" required value={newDriverForm.fullName} onChange={(e) => setNewDriverForm({ ...newDriverForm, fullName: e.target.value })} className="w-full min-h-[48px] px-4 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900" />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-bold mb-1">رقم الهاتف الأساسي *</label>
+                              <input type="tel" required value={newDriverForm.primaryPhone} onChange={(e) => setNewDriverForm({ ...newDriverForm, primaryPhone: e.target.value })} className="w-full min-h-[48px] px-4 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900" />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-bold mb-1">رقم الهاتف البديل *</label>
+                              <input type="tel" required value={newDriverForm.emergencyPhone} onChange={(e) => setNewDriverForm({ ...newDriverForm, emergencyPhone: e.target.value })} className="w-full min-h-[48px] px-4 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900" />
+                            </div>
+                          </div>
+
+                          <div className="p-4 rounded-2xl bg-amber-50/70 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900 space-y-4">
+                            <h3 className="text-sm font-bold text-amber-950 dark:text-amber-200">🔒 المستمسكات الرسمية (مخفية عن الطلاب وتظهر للأدمن فقط)</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                              <input type="text" required placeholder="رقم البطاقة الوطنية الموحدة" value={newDriverForm.nationalIdNumber} onChange={(e) => setNewDriverForm({ ...newDriverForm, nationalIdNumber: e.target.value })} className="w-full min-h-[48px] px-4 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm" />
+                              <input type="text" required placeholder="رقم إجازة السوق" value={newDriverForm.drivingLicenseNumber} onChange={(e) => setNewDriverForm({ ...newDriverForm, drivingLicenseNumber: e.target.value })} className="w-full min-h-[48px] px-4 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm" />
+                              <input type="text" required placeholder="رقم سنوية السيارة" value={newDriverForm.vehicleRegistrationNumber} onChange={(e) => setNewDriverForm({ ...newDriverForm, vehicleRegistrationNumber: e.target.value })} className="w-full min-h-[48px] px-4 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm" />
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                              <label className="block text-sm font-bold mb-1">نوع السيارة *</label>
+                              <select value={newDriverForm.vehicleType} onChange={(e) => { const vt = e.target.value; setNewDriverForm({ ...newDriverForm, vehicleType: vt, maxCapacity: VEHICLE_TYPE_LABELS[vt].defaultSeats }); }} className="w-full min-h-[48px] px-4 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900">
+                                {Object.entries(VEHICLE_TYPE_LABELS).map(([k, v]) => (
+                                  <option key={k} value={k}>{v.label}</option>
+                                ))}
+                              </select>
+                            </div>
+                            <div>
+                              <label className="block text-sm font-bold mb-1">الموديل (سنة الصنع) *</label>
+                              <input type="number" value={newDriverForm.manufactureYear} onChange={(e) => setNewDriverForm({ ...newDriverForm, manufactureYear: Number(e.target.value) })} className="w-full min-h-[48px] px-4 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900" />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-bold mb-1">السعة القصوى للركاب *</label>
+                              <input type="number" value={newDriverForm.maxCapacity} onChange={(e) => setNewDriverForm({ ...newDriverForm, maxCapacity: Number(e.target.value) })} className="w-full min-h-[48px] px-4 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900" />
+                            </div>
+                          </div>
+
+                          <ErgonomicButton type="submit" variant="primary" fullWidth>
+                            حفظ المستمسكات السرية وتسجيل المركبة
+                          </ErgonomicButton>
+                        </form>
+                      </OpticalCard>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* غرفة القيادة والتحكم للشركة (Admin) */}
+              {activePortal === 'admin' && (
+                <div className="space-y-8">
+                  <div className="flex flex-wrap items-center justify-between gap-4">
+                    <div>
+                      <h1 className="text-2xl font-extrabold">غرفة العمليات المركزية ومراقبة الأسطول الحية (Admin Command Center)</h1>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">مراقبة حية لجميع السيارات المربوطة بشرائح الـ GPS وتدقيق مستمسكات السائقين المخفية عن العامة.</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <StatusBadge tone="emerald">3 مركبات متصلة الآن</StatusBadge>
+                      <StatusBadge tone="crimson">1 تنبيه سرعة زائدة</StatusBadge>
+                    </div>
+                  </div>
+
+                  <OpticalCard elevated className="space-y-6">
+                    <h2 className="text-xl font-bold">شاشة المراقبة الحية للأسطول (Live GPS Operations Map)</h2>
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                      <div className="lg:col-span-8 relative h-96 rounded-2xl bg-[#0B0F19] border border-slate-800 overflow-hidden">
+                        <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'linear-gradient(to right, #334155 1px, transparent 1px), linear-gradient(to bottom, #334155 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
+                        {fleetVehicles.map((v, idx) => {
+                          const leftPct = 16 + idx * 27;
+                          const topPct = 24 + ((idx * 23) % 52);
+                          const badgeColor = v.operationalState === 'overspeed_alert' ? 'bg-red-600' : v.operationalState === 'arrived_at_school' ? 'bg-emerald-600' : 'bg-[#2563EB]';
+                          return (
+                            <div key={v.id} style={{ left: `${leftPct}%`, top: `${topPct}%` }} className="absolute gps-glide">
+                              <div className={`px-4 py-2 rounded-xl text-white text-xs font-bold shadow-lg ${badgeColor} space-y-1`}>
+                                <div className="flex items-center gap-2">
+                                  <span>🚐 {v.vehicleLabel}</span>
+                                  <span>({v.speedKmh} كم/س)</span>
+                                </div>
+                                <div className="text-[11px] opacity-90">{v.institutionName} • الركاب: {v.currentOccupied}/{v.maxCapacity}</div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      <div className="lg:col-span-4 space-y-4">
+                        {fleetVehicles.map((v) => (
+                          <div key={v.id} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-2">
+                            <div className="flex items-center justify-between">
+                              <span className="font-bold text-sm">{v.driverName}</span>
+                              {v.operationalState === 'en_route' && <StatusBadge tone="blue">في الطريق ({v.speedKmh} كم/س)</StatusBadge>}
+                              {v.operationalState === 'arrived_at_school' && <StatusBadge tone="emerald">وصلت للمدرسة</StatusBadge>}
+                              {v.operationalState === 'overspeed_alert' && <StatusBadge tone="crimson">سرعة زائدة ({v.speedKmh} كم/س)</StatusBadge>}
+                            </div>
+                            <p className="text-xs text-slate-600 dark:text-slate-400">{v.vehicleLabel} ({v.modelYear}) | اللوحة: {v.plateNumber}</p>
+                            <p className="text-xs font-mono text-slate-500">IMEI: {v.imei}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </OpticalCard>
+
+                  <OpticalCard elevated className="space-y-6">
+                    <h2 className="text-xl font-bold">مراجعة وتوثيق المستمسكات السرية للسائقين (تظهر للأدمن فقط)</h2>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-right border-collapse text-sm">
+                        <thead>
+                          <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-100/70 dark:bg-slate-900">
+                            <th className="p-4 font-bold">اسم السائق والهواتف</th>
+                            <th className="p-4 font-bold">المركبة والسعة</th>
+                            <th className="p-4 font-bold">أرقام المستمسكات الرسمية</th>
+                            <th className="p-4 font-bold">الحالة والقرار</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
+                          {driverKycList.map((doc) => (
+                            <tr key={doc.id}>
+                              <td className="p-4">
+                                <p className="font-bold">{doc.fullName}</p>
+                                <p className="text-xs text-slate-500">أساسي: {doc.primaryPhone} | بديل: {doc.emergencyPhone}</p>
+                              </td>
+                              <td className="p-4">
+                                <p className="font-semibold">{doc.vehicleLabel} ({doc.manufactureYear})</p>
+                                <p className="text-xs text-slate-500">السعة: {doc.maxCapacity} ركاب | {doc.residentialDistrict}</p>
+                              </td>
+                              <td className="p-4 text-xs font-mono space-y-1">
+                                <p>البطاقة الموحدة: {doc.nationalIdNumber}</p>
+                                <p>إجازة السوق: {doc.drivingLicenseNumber}</p>
+                                <p>السنوية: {doc.vehicleRegistrationNumber}</p>
+                              </td>
+                              <td className="p-4">
+                                {doc.verificationStatus === 'approved' ? (
+                                  <StatusBadge tone="emerald">موثّق ومعتمد</StatusBadge>
+                                ) : (
+                                  <ErgonomicButton
+                                    variant="safety"
+                                    onClick={() => {
+                                      setDriverKycList((prev) => prev.map((d) => (d.id === doc.id ? { ...d, verificationStatus: 'approved' } : d)));
+                                      showNotice(`تم توثيق حساب ${doc.fullName} واعتماد مستمسكاته.`);
+                                    }}
+                                  >
+                                    اعتماد وتوثيق
+                                  </ErgonomicButton>
+                                )}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </OpticalCard>
+                </div>
+              )}
+            </main>
+          </div>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<KhattiApp />);
+  </script>
+</body>
+</html>

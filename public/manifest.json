@@ -1,0 +1,11 @@
+{
+  "name": "خطي - منظومة النقل الدراسي الشهري",
+  "short_name": "خطي",
+  "description": "إدارة خطوط النقل الدراسي الشهري للمدارس والجامعات في العراق",
+  "start_url": "/",
+  "display": "standalone",
+  "dir": "rtl",
+  "lang": "ar",
+  "background_color": "#F8FAFC",
+  "theme_color": "#2563EB"
+}
