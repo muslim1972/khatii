@@ -92,6 +92,13 @@ module.exports = {
           subtle: '#EFF6FF',
           subtleDark: 'rgba(37, 99, 235, 0.16)',
         },
+        bus: {
+          DEFAULT: '#F59E0B',
+          hover: '#D97706',
+          dark: '#B45309',
+          subtle: '#FEF3C7',
+          subtleDark: 'rgba(245, 158, 11, 0.16)',
+        },
         safety: {
           DEFAULT: '#10B981',
           hover: '#059669',

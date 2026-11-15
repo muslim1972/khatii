@@ -1,18 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Readex_Pro, IBM_Plex_Sans_Arabic } from 'next/font/google';
 import './globals.css';
-
-const readexPro = Readex_Pro({
-  subsets: ['arabic', 'latin'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-readex-pro',
-});
-
-const ibmPlexArabic = IBM_Plex_Sans_Arabic({
-  subsets: ['arabic', 'latin'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-ibm-plex-arabic',
-});
 
 export const metadata: Metadata = {
   title: 'خطي (Khatti) | منظومة خطوط النقل الدراسي الشهري في العراق',
@@ -33,7 +20,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ar" dir="rtl" className={`${readexPro.variable} ${ibmPlexArabic.variable}`}>
+    <html lang="ar" dir="rtl">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@400;500;600;700&display=swap" rel="stylesheet" />
+      </head>
       <body className="min-h-screen antialiased selection:bg-blue-600 selection:text-white">
         {children}
       </body>

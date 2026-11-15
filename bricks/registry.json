@@ -5,18 +5,23 @@
   "bricks": {
     "FE-CORE-01": {
       "name": "Core Shell & Optical Design System",
-      "description": "الغلاف العام والخطوط وشبكة التصميم وصفحة الدخول الرئيسية",
+      "description": "الغلاف العام والخطوط وشبكة التصميم وصفحة الدخول الرئيسية والهيدر الموحد ونوافذ الميثاق",
       "files": [
         "src/app/globals.css",
         "src/app/layout.tsx",
-        "src/app/page.tsx"
+        "src/app/page.tsx",
+        "src/components/common/Header.tsx",
+        "src/components/modals/BlindMatchingModal.tsx"
       ]
     },
     "FE-TRANSPORT-01": {
-      "name": "Full Transport Portals & Blind Matching System",
-      "description": "منظومة النقل الشاملة: بوابة الطالب وولي الأمر، بوابة السائق والتحقق KYC، وغرفة القيادة المركزية ومحرك المطابقة العمياء",
+      "name": "Full Transport Portals & Modular Subsystems",
+      "description": "منظومة النقل الشاملة المعزولة معمارياً: بوابات الأبناء وأولياء الأمور، كابينة السائق، وغرفة العمليات الإدارية",
       "files": [
-        "src/components/KhattiFullStackSystem.tsx"
+        "src/components/KhattiFullStackSystem.tsx",
+        "src/components/parent/ParentPortal.tsx",
+        "src/components/driver/DriverCockpit.tsx",
+        "src/components/admin/AdminOperationsRadar.tsx"
       ]
     },
     "FE-TELEMETRY-01": {
