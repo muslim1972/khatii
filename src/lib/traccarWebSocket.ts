@@ -2,7 +2,7 @@
  * وحدة الربط المباشر مع خادم Traccar GPS عبر WebSockets
  * تستقبل إحداثيات شرائح الـ GPS المزروعة في المركبات لحظياً وتحدّث جدول gps_trackers في Supabase
  */
-import { supabase } from '@/components/KhattiFullStackSystem';
+import { supabase } from '@/lib/supabaseClient';
 
 export interface TraccarPositionPayload {
   deviceId: number;

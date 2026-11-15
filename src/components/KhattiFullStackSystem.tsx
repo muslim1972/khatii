@@ -1,15 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
-
-// =====================================================================================
-// 1. إعداد الاتصال بقاعدة بيانات Supabase + خادم Traccar GPS WebSocket
-// =====================================================================================
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://your-project.supabase.co';
-const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'your-anon-key';
-
-export const supabase: SupabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+import { supabase } from '@/lib/supabaseClient';
 
 // =====================================================================================
 // 2. الأنواع البرمجية الصارمة (TypeScript Domain Models)
@@ -457,7 +449,6 @@ export default function KhattiFullStackSystem() {
 
   const showNotice = (msg: string) => {
     setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 5000);
   };
 
   // -----------------------------------------------------------------------------------
