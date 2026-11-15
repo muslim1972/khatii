@@ -1,0 +1,37 @@
+{
+  "system": "khatii-iraq-transport",
+  "framework": "B.R.I.C.K. Architectural Governance Framework v4.0",
+  "author": "Eng. Muslim A. Abdul-Hassan (Karbala Telecommunication & Informatics Directorate)",
+  "bricks": {
+    "FE-CORE-01": {
+      "name": "Core Shell & Optical Design System",
+      "description": "الغلاف العام والخطوط وشبكة التصميم وصفحة الدخول الرئيسية",
+      "files": [
+        "src/app/globals.css",
+        "src/app/layout.tsx",
+        "src/app/page.tsx"
+      ]
+    },
+    "FE-TRANSPORT-01": {
+      "name": "Full Transport Portals & Blind Matching System",
+      "description": "منظومة النقل الشاملة: بوابة الطالب وولي الأمر، بوابة السائق والتحقق KYC، وغرفة القيادة المركزية ومحرك المطابقة العمياء",
+      "files": [
+        "src/components/KhattiFullStackSystem.tsx"
+      ]
+    },
+    "FE-TELEMETRY-01": {
+      "name": "Live GPS Telemetry & Traccar Hardware Integration",
+      "description": "التتبع اللحظي لأسطول المركبات والربط المباشر مع أجهزة Traccar GPS عبر WebSockets",
+      "files": [
+        "src/lib/traccarWebSocket.ts"
+      ]
+    },
+    "BE-DATA-01": {
+      "name": "Supabase Core Backend Services",
+      "description": "عميل الاتصال المركزي مع قاعدة بيانات Supabase ونظام الصلاحيات RLS",
+      "files": [
+        "src/lib/supabaseClient.ts"
+      ]
+    }
+  }
+}

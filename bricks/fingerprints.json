@@ -1,0 +1,8 @@
+{
+  "src/app/globals.css": "bedc0a445b13363ceaf0a9b48ac07057",
+  "src/app/layout.tsx": "97360ac1a27dea1e3291e5110549e6d8",
+  "src/app/page.tsx": "9968812c9a637c330682e7acccab623a",
+  "src/components/KhattiFullStackSystem.tsx": "33215b0797475214c6d182f9bb3d9d0b",
+  "src/lib/supabaseClient.ts": "1e2a0b875d5b0b45fe2f034c89182fb3",
+  "src/lib/traccarWebSocket.ts": "7a4f524f821113312c34de2f3547887e"
+}
