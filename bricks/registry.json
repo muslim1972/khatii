@@ -4,21 +4,25 @@
   "author": "Eng. Muslim A. Abdul-Hassan (Karbala Telecommunication & Informatics Directorate)",
   "bricks": {
     "FE-CORE-01": {
-      "name": "Core Shell & Optical Design System",
-      "description": "الغلاف العام والخطوط وشبكة التصميم وصفحة الدخول الرئيسية والهيدر الموحد ونوافذ الميثاق",
+      "name": "Core Shell, Landing & Optical Design System",
+      "description": "الغلاف العام والخطوط وصفحة الهبوط العالمية ونوافذ التوثيق وحماية الخصوصية والقائمة الجانبية",
       "files": [
         "src/app/globals.css",
         "src/app/layout.tsx",
         "src/app/page.tsx",
         "src/components/common/Header.tsx",
+        "src/components/landing/LandingPage.tsx",
+        "src/components/auth/AuthModal.tsx",
+        "src/components/navigation/AppDrawer.tsx",
         "src/components/modals/BlindMatchingModal.tsx"
       ]
     },
     "FE-TRANSPORT-01": {
       "name": "Full Transport Portals & Modular Subsystems",
-      "description": "منظومة النقل الشاملة المعزولة معمارياً: بوابات الأبناء وأولياء الأمور، كابينة السائق، وغرفة العمليات الإدارية",
+      "description": "منظومة النقل الشاملة المعزولة معمارياً: إطار لوحة التحكم، بوابات الأبناء وأولياء الأمور، كابينة السائق، وغرفة العمليات الإدارية",
       "files": [
         "src/components/KhattiFullStackSystem.tsx",
+        "src/components/dashboard/DashboardLayout.tsx",
         "src/components/parent/ParentPortal.tsx",
         "src/components/driver/DriverCockpit.tsx",
         "src/components/admin/AdminOperationsRadar.tsx"

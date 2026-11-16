@@ -1,16 +1,20 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Header, UserRole } from './common/Header';
-import { ParentPortal } from './parent/ParentPortal';
-import { DriverCockpit } from './driver/DriverCockpit';
-import { AdminOperationsRadar } from './admin/AdminOperationsRadar';
+import { UserRole } from './common/Header';
+import { LandingPage } from './landing/LandingPage';
+import { DashboardLayout } from './dashboard/DashboardLayout';
+import { AuthModal, UserSession } from './auth/AuthModal';
 import { BlindMatchingModal } from './modals/BlindMatchingModal';
 
 export default function KhattiFullStackSystem() {
+  const [viewMode, setViewMode] = useState<'landing' | 'dashboard'>('landing');
   const [currentRole, setCurrentRole] = useState<UserRole>('parent');
   const [isDark, setIsDark] = useState<boolean>(false);
+  const [isAuthOpen, setIsAuthOpen] = useState<boolean>(false);
+  const [authMode, setAuthMode] = useState<'login' | 'signup'>('signup');
   const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState<boolean>(false);
+  const [userSession, setUserSession] = useState<UserSession | null>(null);
 
   // Sync theme with document element
   useEffect(() => {
@@ -21,39 +25,60 @@ export default function KhattiFullStackSystem() {
     }
   }, [isDark]);
 
+  const handleOpenAuth = (mode: 'login' | 'signup') => {
+    setAuthMode(mode);
+    setIsAuthOpen(true);
+  };
+
+  const handleAuthSuccess = (session: UserSession) => {
+    setUserSession(session);
+    setCurrentRole(session.role);
+    setIsAuthOpen(false);
+    setViewMode('dashboard');
+  };
+
+  const handleExploreDemo = () => {
+    setUserSession({
+      name: 'أحمد الكرخي (معاينة تجريبية)',
+      phone: '0770••••120',
+      role: 'parent',
+    });
+    setViewMode('dashboard');
+  };
+
   return (
-    <div className="min-h-screen bg-canvas-light dark:bg-canvas-dark text-ink-primary dark:text-ink-inverse transition-colors duration-200">
-      {/* Sovereign Header */}
-      <Header
-        currentRole={currentRole}
-        onRoleChange={setCurrentRole}
-        isDark={isDark}
-        onToggleTheme={() => setIsDark(!isDark)}
-        onOpenPrivacyNotice={() => setIsPrivacyModalOpen(true)}
+    <>
+      {viewMode === 'landing' ? (
+        <LandingPage
+          onOpenAuth={handleOpenAuth}
+          onExploreDemo={handleExploreDemo}
+          onOpenPrivacyNotice={() => setIsPrivacyModalOpen(true)}
+        />
+      ) : (
+        <DashboardLayout
+          currentRole={currentRole}
+          onRoleChange={setCurrentRole}
+          onNavigateHome={() => setViewMode('landing')}
+          isDark={isDark}
+          onToggleTheme={() => setIsDark(!isDark)}
+          userName={userSession?.name}
+          userPhone={userSession?.phone}
+        />
+      )}
+
+      {/* Authentication and Onboarding Modal */}
+      <AuthModal
+        isOpen={isAuthOpen}
+        initialMode={authMode}
+        onClose={() => setIsAuthOpen(false)}
+        onSuccess={handleAuthSuccess}
       />
 
-      {/* Main Role Content Container */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {currentRole === 'parent' && <ParentPortal />}
-        {currentRole === 'driver' && <DriverCockpit />}
-        {currentRole === 'admin' && <AdminOperationsRadar />}
-      </main>
-
-      {/* Blind Matching Protocol Modal */}
+      {/* Sovereign Privacy & Blind Matching Policy Modal */}
       <BlindMatchingModal
         isOpen={isPrivacyModalOpen}
         onClose={() => setIsPrivacyModalOpen(false)}
       />
-
-      {/* Global Footer */}
-      <footer className="mt-16 py-8 border-t border-surface-borderLight dark:border-surface-borderDark text-center text-xs text-ink-muted dark:text-ink-inverseMuted space-y-2">
-        <p>
-          منظومة خطي للنقل المدرسي والجامعي الذكي في العراق © 2026 • حوكمة معمارية حتمية وفق إطار عمل B.R.I.C.K
-        </p>
-        <p className="text-[11px] text-slate-400">
-          ربط جغرافي PostGIS • تتبع أجهزة Traccar Hardware • حماية الخصوصية العمياء (Blind Matching RLS)
-        </p>
-      </footer>
-    </div>
+    </>
   );
 }
