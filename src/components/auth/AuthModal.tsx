@@ -27,7 +27,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const [mode, setMode] = useState<'login' | 'signup'>(initialMode);
   
   // Registration flow state
-  const [selectedRole, setSelectedRole] = useState<'student' | 'parent' | 'driver'>('parent');
+  const [selectedRole, setSelectedRole] = useState<'student' | 'parent'>('parent');
   const [studentLevel, setStudentLevel] = useState<
     'primary' | 'intermediate' | 'highschool' | 'university' | null
   >(null);
@@ -36,7 +36,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const [fullName, setFullName] = useState<string>('');
   const [phoneNumber, setPhoneNumber] = useState<string>('');
   const [schoolName, setSchoolName] = useState<string>('');
-  const [vehicleInfo, setVehicleInfo] = useState<string>('');
   const [validationError, setValidationError] = useState<string | null>(null);
 
   if (!isOpen) return null;
@@ -84,16 +83,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         role: 'parent', // handled inside parent portal or student view
         studentLevel,
         schoolOrUniversity: schoolName || 'المدرسة المستهدفة',
-      });
-      return;
-    }
-
-    if (selectedRole === 'driver') {
-      onSuccess({
-        name: fullName,
-        phone: phoneNumber,
-        role: 'driver',
-        schoolOrUniversity: vehicleInfo,
       });
       return;
     }
@@ -198,21 +187,22 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 <label className="block text-xs font-bold text-ink-primary dark:text-ink-inverse">
                   اختر صفتك في المنظومة:
                 </label>
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-2 gap-3">
                   <button
                     type="button"
                     onClick={() => {
                       setSelectedRole('parent');
                       setStudentLevel(null);
                     }}
-                    className={`p-3 rounded-2xl border text-center transition-all ${
+                    className={`p-3.5 sm:p-4 rounded-2xl border text-center transition-all ${
                       selectedRole === 'parent'
-                        ? 'border-brand bg-brand-subtle/40 dark:bg-brand-subtleDark/40 text-brand shadow-ambient-sm'
+                        ? 'border-brand bg-brand-subtle/40 dark:bg-brand-subtleDark/40 text-brand shadow-ambient-sm ring-2 ring-brand/20'
                         : 'border-surface-borderLight dark:border-surface-borderDark bg-surface-light dark:bg-surface-dark text-ink-secondary hover:border-slate-300'
                     }`}
                   >
-                    <div className="text-2xl mb-1">👨‍👩‍👧‍👦</div>
-                    <div className="text-xs font-bold">ولي أمر (Partner)</div>
+                    <div className="text-3xl mb-1">👨‍👩‍👧‍👦</div>
+                    <div className="text-sm font-bold">ولي أمر (Partner)</div>
+                    <div className="text-[11px] text-ink-muted mt-0.5">تسجيل ومتابعة الأبناء</div>
                   </button>
 
                   <button
@@ -220,30 +210,15 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     onClick={() => {
                       setSelectedRole('student');
                     }}
-                    className={`p-3 rounded-2xl border text-center transition-all ${
+                    className={`p-3.5 sm:p-4 rounded-2xl border text-center transition-all ${
                       selectedRole === 'student'
-                        ? 'border-brand bg-brand-subtle/40 dark:bg-brand-subtleDark/40 text-brand shadow-ambient-sm'
+                        ? 'border-brand bg-brand-subtle/40 dark:bg-brand-subtleDark/40 text-brand shadow-ambient-sm ring-2 ring-brand/20'
                         : 'border-surface-borderLight dark:border-surface-borderDark bg-surface-light dark:bg-surface-dark text-ink-secondary hover:border-slate-300'
                     }`}
                   >
-                    <div className="text-2xl mb-1">🎓</div>
-                    <div className="text-xs font-bold">طالب / طالبة</div>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSelectedRole('driver');
-                      setStudentLevel(null);
-                    }}
-                    className={`p-3 rounded-2xl border text-center transition-all ${
-                      selectedRole === 'driver'
-                        ? 'border-bus bg-bus-subtle/40 dark:bg-bus-subtleDark/40 text-bus-dark dark:text-bus shadow-ambient-sm'
-                        : 'border-surface-borderLight dark:border-surface-borderDark bg-surface-light dark:bg-surface-dark text-ink-secondary hover:border-slate-300'
-                    }`}
-                  >
-                    <div className="text-2xl mb-1">🚐</div>
-                    <div className="text-xs font-bold">كابتن خط (سائق)</div>
+                    <div className="text-3xl mb-1">🎓</div>
+                    <div className="text-sm font-bold">طالب / طالبة</div>
+                    <div className="text-[11px] text-ink-muted mt-0.5">إعدادية وكلية وجامعة</div>
                   </button>
                 </div>
               </div>
@@ -383,21 +358,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     value={schoolName}
                     onChange={(e) => setSchoolName(e.target.value)}
                     placeholder="مثال: جامعة بغداد - كلية الهندسة / إعدادية المنصور"
-                    className="w-full px-4 py-3 rounded-2xl bg-canvas-subtle dark:bg-canvas-subtleDark border border-surface-borderLight dark:border-surface-borderDark text-ink-primary dark:text-ink-inverse text-sm focus:outline-none focus:ring-2 focus:ring-brand"
-                  />
-                </div>
-              )}
-
-              {mode === 'signup' && selectedRole === 'driver' && (
-                <div>
-                  <label className="block text-xs font-bold text-ink-primary dark:text-ink-inverse mb-1">
-                    موديل ونوع المركبة وسعة الركاب
-                  </label>
-                  <input
-                    type="text"
-                    value={vehicleInfo}
-                    onChange={(e) => setVehicleInfo(e.target.value)}
-                    placeholder="مثال: تويوتا هايس 2022 (14 راكب - مكيفة)"
                     className="w-full px-4 py-3 rounded-2xl bg-canvas-subtle dark:bg-canvas-subtleDark border border-surface-borderLight dark:border-surface-borderDark text-ink-primary dark:text-ink-inverse text-sm focus:outline-none focus:ring-2 focus:ring-brand"
                   />
                 </div>
