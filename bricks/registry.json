@@ -19,10 +19,11 @@
     },
     "FE-TRANSPORT-01": {
       "name": "Full Transport Portals & Modular Subsystems",
-      "description": "منظومة النقل الشاملة المعزولة معمارياً: إطار لوحة التحكم، بوابات الأبناء وأولياء الأمور، كابينة السائق، وغرفة العمليات الإدارية",
+      "description": "منظومة النقل الشاملة المعزولة معمارياً: إطار لوحة التحكم، بوابات الأبناء وأولياء الأمور، كابينة السائق، وغرفة العمليات الإدارية وبوابة الكابتن والتحقق الحي",
       "files": [
         "src/components/KhattiFullStackSystem.tsx",
         "src/components/dashboard/DashboardLayout.tsx",
+        "src/components/captain/CaptainPortalModal.tsx",
         "src/components/parent/ParentPortal.tsx",
         "src/components/driver/DriverCockpit.tsx",
         "src/components/admin/AdminOperationsRadar.tsx"

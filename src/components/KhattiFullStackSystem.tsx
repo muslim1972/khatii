@@ -6,12 +6,14 @@ import { LandingPage } from './landing/LandingPage';
 import { DashboardLayout } from './dashboard/DashboardLayout';
 import { AuthModal, UserSession } from './auth/AuthModal';
 import { BlindMatchingModal } from './modals/BlindMatchingModal';
+import { CaptainPortalModal } from './captain/CaptainPortalModal';
 
 export default function KhattiFullStackSystem() {
   const [viewMode, setViewMode] = useState<'landing' | 'dashboard'>('landing');
   const [currentRole, setCurrentRole] = useState<UserRole>('parent');
   const [isDark, setIsDark] = useState<boolean>(false);
   const [isAuthOpen, setIsAuthOpen] = useState<boolean>(false);
+  const [isCaptainModalOpen, setIsCaptainModalOpen] = useState<boolean>(false);
   const [authMode, setAuthMode] = useState<'login' | 'signup'>('signup');
   const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState<boolean>(false);
   const [userSession, setUserSession] = useState<UserSession | null>(null);
@@ -53,6 +55,7 @@ export default function KhattiFullStackSystem() {
           onOpenAuth={handleOpenAuth}
           onExploreDemo={handleExploreDemo}
           onOpenPrivacyNotice={() => setIsPrivacyModalOpen(true)}
+          onOpenCaptainPortal={() => setIsCaptainModalOpen(true)}
         />
       ) : (
         <DashboardLayout
@@ -72,6 +75,18 @@ export default function KhattiFullStackSystem() {
         initialMode={authMode}
         onClose={() => setIsAuthOpen(false)}
         onSuccess={handleAuthSuccess}
+      />
+
+      {/* Dedicated Captain Work & KYC Onboarding Modal */}
+      <CaptainPortalModal
+        isOpen={isCaptainModalOpen}
+        onClose={() => setIsCaptainModalOpen(false)}
+        onSuccess={(session) => {
+          setUserSession(session);
+          setCurrentRole('driver');
+          setIsCaptainModalOpen(false);
+          setViewMode('dashboard');
+        }}
       />
 
       {/* Sovereign Privacy & Blind Matching Policy Modal */}

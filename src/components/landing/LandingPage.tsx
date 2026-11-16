@@ -6,12 +6,14 @@ interface LandingPageProps {
   onOpenAuth: (mode: 'login' | 'signup') => void;
   onExploreDemo: () => void;
   onOpenPrivacyNotice: () => void;
+  onOpenCaptainPortal: () => void;
 }
 
 export const LandingPage: React.FC<LandingPageProps> = ({
   onOpenAuth,
   onExploreDemo,
   onOpenPrivacyNotice,
+  onOpenCaptainPortal,
 }) => {
   return (
     <div className="min-h-screen bg-canvas-light dark:bg-canvas-dark text-ink-primary dark:text-ink-inverse transition-colors duration-200">
@@ -83,7 +85,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
 
           {/* Subtitle */}
           <p className="text-base sm:text-xl text-ink-secondary dark:text-ink-inverseMuted max-w-2xl mx-auto leading-relaxed">
-            منظومة هندسية متكاملة تربط أولياء الأمور والطلبة بأفضل كباتن الخطوط الموثقين جنائياً، مع تتبع حي للسيارة، إشعار اقتراب 500 متر، وحماية كاملة لخصوصية العائلات.
+            منظومة هندسية متكاملة تربط أولياء الأمور والطلبة بأفضل كباتن الخطوط الموثوقين، مع تتبع حي للسيارة، إشعار اقتراب 500 متر، وحماية كاملة لخصوصية العائلات.
           </p>
 
           {/* CTA Buttons */}
@@ -91,7 +93,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             <button
               type="button"
               onClick={() => onOpenAuth('signup')}
-              className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-brand hover:bg-brand-hover text-white font-bold text-base shadow-ambient-brand transition-all flex items-center justify-center gap-3"
+              className="w-full sm:w-auto px-7 py-4 rounded-2xl bg-brand hover:bg-brand-hover text-white font-bold text-base shadow-ambient-brand transition-all flex items-center justify-center gap-2.5"
             >
               <span>🚀</span>
               <span>سجّل خط ابنك الآن (حساب جديد)</span>
@@ -99,8 +101,17 @@ export const LandingPage: React.FC<LandingPageProps> = ({
 
             <button
               type="button"
+              onClick={onOpenCaptainPortal}
+              className="w-full sm:w-auto px-7 py-4 rounded-2xl bg-gradient-to-r from-bus to-bus-hover text-slate-900 font-bold text-base shadow-ambient-sm hover:shadow-ambient-md transition-all flex items-center justify-center gap-2.5 border border-bus-dark/20"
+            >
+              <span className="text-xl">🚐</span>
+              <span>أنا كابتن</span>
+            </button>
+
+            <button
+              type="button"
               onClick={onExploreDemo}
-              className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-surface-light dark:bg-surface-dark border-2 border-bus hover:bg-bus/10 text-ink-primary dark:text-ink-inverse font-bold text-base shadow-ambient-sm transition-all flex items-center justify-center gap-3"
+              className="w-full sm:w-auto px-7 py-4 rounded-2xl bg-surface-light dark:bg-surface-dark border-2 border-bus hover:bg-bus/10 text-ink-primary dark:text-ink-inverse font-bold text-base shadow-ambient-sm transition-all flex items-center justify-center gap-2.5"
             >
               <span>🧭</span>
               <span>تجربة لوحة التحكم ورادار التتبع الحي</span>
@@ -234,7 +245,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                 سجّل بياناتك ومدرستك
               </h3>
               <p className="text-xs text-ink-muted dark:text-ink-inverseMuted max-w-xs mx-auto">
-                اختر صفتك (ولي أمر، طالب إعدادي/جامعي، أو كابتن) وحدد منطقة سكنك وموقع الدوام.
+                اختر صفتك (ولي أمر أو طالب إعدادي/جامعي) وحدد منطقة سكنك وموقع الدوام.
               </p>
             </div>
 
