@@ -31,9 +31,11 @@
     },
     "FE-TELEMETRY-01": {
       "name": "Live GPS Telemetry & Traccar Hardware Integration",
-      "description": "التتبع اللحظي لأسطول المركبات والربط المباشر مع أجهزة Traccar GPS عبر WebSockets",
+      "description": "التتبع اللحظي لأسطول المركبات والربط المباشر مع أجهزة Traccar GPS وخريطة الملاحة الحية مع نظام التخزين المؤقت للبلاطات",
       "files": [
-        "src/lib/traccarWebSocket.ts"
+        "src/lib/traccarWebSocket.ts",
+        "src/lib/mapTileCache.ts",
+        "src/components/map/KhattiInteractiveMap.tsx"
       ]
     },
     "BE-DATA-01": {

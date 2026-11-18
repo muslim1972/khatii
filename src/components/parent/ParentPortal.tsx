@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { KhattiInteractiveMap } from '@/components/map/KhattiInteractiveMap';
 
 export interface StudentProfile {
   id: string;
@@ -18,6 +19,9 @@ export interface StudentProfile {
   distanceMeters: number;
   speedKmH: number;
   isTodayAbsent: boolean;
+  busCoords: { lat: number; lng: number };
+  homeCoords: { lat: number; lng: number };
+  schoolCoords: { lat: number; lng: number };
 }
 
 const mockStudents: StudentProfile[] = [
@@ -37,6 +41,9 @@ const mockStudents: StudentProfile[] = [
     distanceMeters: 850,
     speedKmH: 34,
     isTodayAbsent: false,
+    busCoords: { lat: 33.3152, lng: 44.3661 },
+    homeCoords: { lat: 33.3080, lng: 44.3590 },
+    schoolCoords: { lat: 33.3280, lng: 44.3720 },
   },
   {
     id: 'std-2',
@@ -54,6 +61,9 @@ const mockStudents: StudentProfile[] = [
     distanceMeters: 0,
     speedKmH: 0,
     isTodayAbsent: false,
+    busCoords: { lat: 33.2980, lng: 44.4120 },
+    homeCoords: { lat: 33.2950, lng: 44.4080 },
+    schoolCoords: { lat: 33.3020, lng: 44.4190 },
   },
   {
     id: 'std-3',
@@ -71,6 +81,9 @@ const mockStudents: StudentProfile[] = [
     distanceMeters: 3200,
     speedKmH: 42,
     isTodayAbsent: false,
+    busCoords: { lat: 33.2711, lng: 44.3789 },
+    homeCoords: { lat: 33.2650, lng: 44.3710 },
+    schoolCoords: { lat: 33.2790, lng: 44.3850 },
   },
 ];
 
@@ -223,59 +236,26 @@ export const ParentPortal: React.FC = () => {
               </div>
             </div>
 
-            {/* Simulated Live Map Canvas with HUD telemetry */}
-            <div className="relative w-full h-72 sm:h-80 rounded-2xl bg-slate-900 border border-slate-800 overflow-hidden flex flex-col justify-between p-4 shadow-inner">
-              {/* Map grid lines simulation */}
-              <div
-                className="absolute inset-0 opacity-15"
-                style={{
-                  backgroundImage: 'radial-gradient(#38BDF8 1px, transparent 1px)',
-                  backgroundSize: '24px 24px',
-                }}
-              ></div>
-
-              {/* HUD Header */}
-              <div className="relative z-10 flex items-center justify-between text-xs text-white">
-                <div className="flex items-center gap-2 bg-slate-800/80 backdrop-blur-md px-3 py-1.5 rounded-xl border border-slate-700">
-                  <span className="w-2 h-2 rounded-full bg-safety"></span>
-                  <span>Traccar GPS 60fps</span>
-                  <span className="text-slate-400">| 11 قمر صناعي</span>
-                </div>
-
-                <div className="bg-slate-800/80 backdrop-blur-md px-3 py-1.5 rounded-xl border border-slate-700 text-bus">
-                  السرعة: {activeStudent.speedKmH} كم/ساعة
-                </div>
-              </div>
-
-              {/* Bus Location Indicator inside Map */}
-              <div className="relative z-10 self-center flex flex-col items-center gap-2 my-auto">
-                <div className="relative flex items-center justify-center">
-                  <span className="animate-ping absolute inline-flex h-16 w-16 rounded-full bg-bus opacity-30"></span>
-                  <div className="relative w-14 h-14 rounded-2xl bg-bus text-slate-900 flex items-center justify-center text-2xl shadow-ambient-lg border-2 border-white">
-                    🚌
-                  </div>
-                </div>
-                <div className="bg-slate-900/90 backdrop-blur-md px-3 py-1 rounded-full text-white text-xs border border-slate-700 font-semibold shadow">
-                  مسافة {activeStudent.distanceMeters}م من المحطة
-                </div>
-              </div>
-
-              {/* HUD Footer Metrics */}
-              <div className="relative z-10 grid grid-cols-3 gap-2 text-center text-white">
-                <div className="bg-slate-800/80 backdrop-blur-md p-2.5 rounded-xl border border-slate-700">
-                  <div className="text-[10px] text-slate-400">الوقت المتوقع للوصول</div>
-                  <div className="text-lg font-bold text-bus">~{activeStudent.etaMinutes} دقائق</div>
-                </div>
-                <div className="bg-slate-800/80 backdrop-blur-md p-2.5 rounded-xl border border-slate-700">
-                  <div className="text-[10px] text-slate-400">السياج الجغرافي</div>
-                  <div className="text-lg font-bold text-safety">منطقة آمنة (500م)</div>
-                </div>
-                <div className="bg-slate-800/80 backdrop-blur-md p-2.5 rounded-xl border border-slate-700">
-                  <div className="text-[10px] text-slate-400">حالة المسار</div>
-                  <div className="text-lg font-bold text-sky-400">سلس دون ازدحام</div>
-                </div>
-              </div>
-            </div>
+            {/* Live Interactive Map with Buffer Tile Caching */}
+            <KhattiInteractiveMap
+              busLocation={{
+                lat: activeStudent.busCoords.lat,
+                lng: activeStudent.busCoords.lng,
+                speed: activeStudent.speedKmH,
+              }}
+              homeLocation={{
+                lat: activeStudent.homeCoords.lat,
+                lng: activeStudent.homeCoords.lng,
+                label: `منزل ${activeStudent.name}`,
+              }}
+              schoolLocation={{
+                lat: activeStudent.schoolCoords.lat,
+                lng: activeStudent.schoolCoords.lng,
+                name: activeStudent.school,
+              }}
+              geofenceRadiusMeters={500}
+              heightClassName="h-80 sm:h-96"
+            />
 
             {/* Driver Profile & Vehicle info */}
             <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl bg-canvas-subtle dark:bg-canvas-subtleDark border border-surface-borderLight dark:border-surface-borderDark">

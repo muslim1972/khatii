@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { KhattiInteractiveMap } from '@/components/map/KhattiInteractiveMap';
 
 interface ManifestItem {
   id: string;
@@ -119,6 +120,23 @@ export const DriverCockpit: React.FC = () => {
             07:42 ص
           </div>
         </div>
+      </div>
+
+      {/* Live Driving Navigation Map with Buffer Caching */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h3 className="text-base font-bold text-ink-primary dark:text-ink-inverse flex items-center gap-2">
+            <span>🗺️</span>
+            <span>خريطة الملاحة الحية ومسار التوقفات (بث Traccar & GPS)</span>
+          </h3>
+          <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-bus-subtle text-bus-dark">
+            تحديث تلقائي 60fps
+          </span>
+        </div>
+        <KhattiInteractiveMap
+          busLocation={{ lat: 33.3152, lng: 44.3661, speed: 34 }}
+          heightClassName="h-72 sm:h-88"
+        />
       </div>
 
       {/* Passenger Manifest: Large-target touch list for safe driving */}
