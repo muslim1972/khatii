@@ -21,92 +21,92 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenPrivacyNotice,
 }) => {
   return (
-    <header className="sticky top-0 z-40 w-full backdrop-blur-xl bg-surface-glassLight dark:bg-surface-glassDark border-b border-surface-borderLight dark:border-surface-borderDark transition-colors duration-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 py-3 flex flex-wrap items-center justify-between gap-4">
+    <header className="sticky top-0 z-40 w-full backdrop-blur-md bg-white/90 dark:bg-slate-950/90 border-b border-slate-200/80 dark:border-slate-800 transition-colors duration-150">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-3">
         {/* Brand identity & live status */}
-        <div className="flex items-center gap-3.5">
-          <div className="relative flex items-center justify-center w-11 h-11 rounded-2xl bg-gradient-to-br from-bus to-bus-dark text-slate-900 shadow-ambient-sm">
-            <span className="text-xl font-bold tracking-tight select-none">خـ</span>
-            <span className="absolute -top-1 -right-1 flex h-3 w-3">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-safety opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-safety"></span>
+        <div className="flex items-center gap-2.5">
+          <div className="relative flex items-center justify-center w-8 h-8 rounded-xl bg-amber-500 text-slate-950 font-bold text-sm shadow-2xs">
+            <span className="tracking-tight select-none">خـ</span>
+            <span className="absolute -top-0.5 -right-0.5 flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
             </span>
           </div>
 
           <div>
-            <div className="flex items-center gap-2">
-              <span className="text-lg font-bold tracking-tight text-ink-primary dark:text-ink-inverse">
-                مـنـظـومـة خَـطّـي
+            <div className="flex items-center gap-1.5">
+              <span className="text-sm font-bold tracking-tight text-slate-900 dark:text-white leading-none">
+                خَـطّـي
               </span>
-              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-bus-subtle dark:bg-bus-subtleDark text-bus-dark border border-bus/30">
+              <span className="inline-flex items-center px-1.5 py-0.2 rounded-full text-[10px] font-semibold bg-amber-500/10 text-amber-800 dark:text-amber-300 border border-amber-500/20">
                 العراق 🇮🇶
               </span>
             </div>
-            <p className="text-xs text-ink-muted dark:text-ink-inverseMuted">
-              إدارة خطوط النقل المدرسي والجامعي • PostGIS + Traccar
+            <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">
+              منظومة النقل المدرسي والجامعي الذكي
             </p>
           </div>
         </div>
 
         {/* Role Navigation Pills */}
-        <nav aria-label="أدوار النظام" className="flex items-center p-1 rounded-2xl bg-canvas-subtle dark:bg-canvas-subtleDark border border-surface-borderLight dark:border-surface-borderDark shadow-inner">
+        <nav aria-label="أدوار النظام" className="hidden md:flex items-center p-0.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
           <button
             type="button"
             onClick={() => onRoleChange('parent')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 ${
+            className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
               currentRole === 'parent'
-                ? 'bg-surface-light dark:bg-surface-dark text-brand dark:text-white shadow-ambient-sm'
-                : 'text-ink-muted hover:text-ink-primary dark:text-ink-inverseMuted dark:hover:text-white'
+                ? 'bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-2xs'
+                : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
             <span>👨‍👩‍👧‍👦</span>
-            <span>بوابة ولي الأمر والطلبة</span>
+            <span>بوابة ولي الأمر</span>
           </button>
 
           <button
             type="button"
             onClick={() => onRoleChange('driver')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 ${
+            className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
               currentRole === 'driver'
-                ? 'bg-surface-light dark:bg-surface-dark text-bus-dark dark:text-bus shadow-ambient-sm'
-                : 'text-ink-muted hover:text-ink-primary dark:text-ink-inverseMuted dark:hover:text-white'
+                ? 'bg-white dark:bg-slate-800 text-amber-700 dark:text-amber-400 shadow-2xs'
+                : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
             <span>🚐</span>
-            <span>كابينة السائق (الكابتن)</span>
+            <span>كابينة الكابتن</span>
           </button>
 
           <button
             type="button"
             onClick={() => onRoleChange('admin')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 ${
+            className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
               currentRole === 'admin'
-                ? 'bg-surface-light dark:bg-surface-dark text-ink-primary dark:text-white shadow-ambient-sm'
-                : 'text-ink-muted hover:text-ink-primary dark:text-ink-inverseMuted dark:hover:text-white'
+                ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-2xs'
+                : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
             <span>🛡️</span>
-            <span>غرفة العمليات (Admin)</span>
+            <span>غرفة العمليات</span>
           </button>
         </nav>
 
         {/* Global Controls: Privacy badge & Theme toggle */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
           <button
             type="button"
             onClick={onOpenPrivacyNotice}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-safety-darkText dark:text-safety bg-safety-subtle dark:bg-safety-subtleDark border border-safety/30 hover:bg-safety/20 transition-colors"
+            className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-500/20 hover:bg-emerald-100/50 transition-colors"
             title="انقر للاطلاع على سياسة حماية الخصوصية العمياء"
           >
-            <span className="w-2 h-2 rounded-full bg-safety inline-block"></span>
-            <span>المطابقة العمياء مفعلة</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block"></span>
+            <span>مطابقة عمياء</span>
           </button>
 
           <button
             type="button"
             onClick={onToggleTheme}
             aria-label="تبديل المظهر"
-            className="p-2 rounded-xl bg-canvas-subtle dark:bg-canvas-subtleDark text-ink-muted dark:text-ink-inverseMuted hover:text-ink-primary dark:hover:text-white transition-colors"
+            className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors text-xs"
           >
             {isDark ? '☀️' : '🌙'}
           </button>

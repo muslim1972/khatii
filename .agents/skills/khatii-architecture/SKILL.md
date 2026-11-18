@@ -143,3 +143,12 @@ npm run build
   4. محاكي جهاز التتبع الميداني GPS Live Simulator في شوارع كربلاء (حي المعلمين ⟵ شارع السناتر ⟵ حي الحسين ⟵ شارع الإسكان ⟵ ثانوية الذرى للمتميزين) يحدّث السرعة الحية ومسافة الاقتراب وتنبيه سياج الـ 500 متر ووصول الحافلة وتخزين بلاطات الخريطة في البافر المحلي.
   5. تحديث كابينة الكابتن [DriverCockpit.tsx](file:///d:/khatii/src/components/driver/DriverCockpit.tsx) ببوليصة ركاب كربلاء الكاملة (5 طلاب) والمحطة القادمة وإحداثيات الخريطة الحية.
   6. اجتياز كافة متطلبات إطار عمل B.R.I.C.K v4.0 وبوابات `verify-bricks.mjs --strict` و `npm run gate` و `npm run build` بنجاح 100%.
+
+### [2026-11-18] DEC-08: إعادة هندسة التصميم البصري، اجتثاث التلوث اللوني، وضبط الكثافة المكانية (High-Density & Restrained Arabic Typography)
+- **الدافع:** استجابة لقرار مجلس المداولة الخماسية واستدعاء الخبراء الدوليين بعد رصد تضخم الحروف العربية (Visual Bloat)، وتنافر الألوان الصارخة، وهدر المساحة الرأسية على الموبايل، والبطاقات الضخمة غير المتناسقة.
+- **القرار والتنفيذ:**
+  1. ضبط المقياس التيبوغرافي في `tailwind.config.js` وحذف قيم clamp المتضخمة، واستبدال `font-black` (وزن 900 المشوه للأحرف العربية) بـ `font-bold` (600-700) فقط.
+  2. إعادة بناء [LandingPage.tsx](file:///d:/khatii/src/components/landing/LandingPage.tsx) بهيدر فائق النحافة (56px)، وعنوان هيرو رشيق ومتوازن، وشريط أزرار مدمج وأنيق (Compact Dual-Action Bar) بارتفاع 40px بدلاً من الأزرار العملاقة 60px المكدسة، مع شريط مؤشرات ثقة نحيف وغير مشتت.
+  3. تنقية لوحة الألوان بالاعتماد على قاعدة Slate/Indigo المتزنة ولون تقني أزرق موحد، وحصر لمسات الكهرمان (Amber) كشعار أو أيقونة دون إشعال الشاشة باللون البرتقالي الصارخ.
+  4. ضغط وتكثيف واجهات [DashboardLayout.tsx](file:///d:/khatii/src/components/dashboard/DashboardLayout.tsx)، [ParentPortal.tsx](file:///d:/khatii/src/components/parent/ParentPortal.tsx)، [DriverCockpit.tsx](file:///d:/khatii/src/components/driver/DriverCockpit.tsx)، و[Header.tsx](file:///d:/khatii/src/components/common/Header.tsx) لتوفير أكثر من 50% من المساحة الرأسية وإظهار البيانات والخريطة بلمحة واحدة دون إرهاق بصري.
+  5. اجتياز كافة بوابات `verify-bricks.mjs --strict` و`npm run gate` و`npm run build` بنسبة 100%.

@@ -44,55 +44,55 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         userPhone={userPhone}
       />
 
-      {/* Top Application Bar */}
-      <header className="sticky top-0 z-30 w-full backdrop-blur-xl bg-surface-glassLight dark:bg-surface-glassDark border-b border-surface-borderLight dark:border-surface-borderDark transition-colors">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 py-3 flex items-center justify-between gap-4">
-          {/* Left: Hamburger Button (3 lines) + Brand Icon */}
-          <div className="flex items-center gap-3">
+      {/* Top Application Bar: Compact 56px Bar */}
+      <header className="sticky top-0 z-30 w-full backdrop-blur-md bg-white/90 dark:bg-slate-950/90 border-b border-slate-200/80 dark:border-slate-800 transition-colors">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-3">
+          {/* Left: Hamburger Button + Brand */}
+          <div className="flex items-center gap-2.5">
             <button
               type="button"
               onClick={() => setIsDrawerOpen(true)}
               aria-label="فتح القائمة الجانبية"
-              className="p-2.5 rounded-2xl bg-canvas-subtle dark:bg-canvas-subtleDark border border-surface-borderLight dark:border-surface-borderDark text-ink-primary dark:text-ink-inverse hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors flex flex-col justify-center items-center gap-1.5 w-11 h-11 shadow-sm"
+              className="p-1.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors flex flex-col justify-center items-center gap-1 w-9 h-9 shadow-2xs"
             >
-              <span className="w-5 h-0.5 bg-current rounded-full transition-all"></span>
-              <span className="w-5 h-0.5 bg-current rounded-full transition-all"></span>
-              <span className="w-5 h-0.5 bg-current rounded-full transition-all"></span>
+              <span className="w-4 h-0.5 bg-current rounded-full transition-all"></span>
+              <span className="w-4 h-0.5 bg-current rounded-full transition-all"></span>
+              <span className="w-4 h-0.5 bg-current rounded-full transition-all"></span>
             </button>
 
             <button
               type="button"
               onClick={onNavigateHome}
-              className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+              className="flex items-center gap-2 hover:opacity-85 transition-opacity"
               title="العودة لصفحة الهبوط"
             >
-              <div className="relative flex items-center justify-center w-10 h-10 rounded-2xl bg-bus text-slate-900 font-bold text-lg shadow-ambient-sm">
+              <div className="relative flex items-center justify-center w-8 h-8 rounded-xl bg-amber-500 text-slate-950 font-bold text-sm shadow-2xs">
                 خـ
-                <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-safety opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-safety"></span>
+                <span className="absolute -top-0.5 -right-0.5 flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                 </span>
               </div>
               <div className="hidden sm:block text-right">
-                <span className="text-base font-bold text-ink-primary dark:text-ink-inverse">
+                <span className="text-sm font-bold text-slate-900 dark:text-white leading-none">
                   لوحة خَـطّـي
                 </span>
-                <p className="text-[11px] text-ink-muted dark:text-ink-inverseMuted">
-                  التتبع والعمليات المباشرة
+                <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">
+                  التتبع والمطابقة الحية
                 </p>
               </div>
             </button>
           </div>
 
           {/* Center: Navigation Pills */}
-          <nav aria-label="أدوار اللوحة" className="hidden md:flex items-center p-1 rounded-2xl bg-canvas-subtle dark:bg-canvas-subtleDark border border-surface-borderLight dark:border-surface-borderDark">
+          <nav aria-label="أدوار اللوحة" className="hidden md:flex items-center p-0.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
             <button
               type="button"
               onClick={() => onRoleChange('parent')}
-              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
                 currentRole === 'parent'
-                  ? 'bg-surface-light dark:bg-surface-dark text-brand shadow-ambient-sm'
-                  : 'text-ink-muted hover:text-ink-primary'
+                  ? 'bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-2xs'
+                  : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
               <span>👨‍👩‍👧‍👦</span>
@@ -102,10 +102,10 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             <button
               type="button"
               onClick={() => onRoleChange('driver')}
-              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
                 currentRole === 'driver'
-                  ? 'bg-surface-light dark:bg-surface-dark text-bus-dark shadow-ambient-sm'
-                  : 'text-ink-muted hover:text-ink-primary'
+                  ? 'bg-white dark:bg-slate-800 text-amber-700 dark:text-amber-400 shadow-2xs'
+                  : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
               <span>🚐</span>
@@ -115,10 +115,10 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             <button
               type="button"
               onClick={() => onRoleChange('admin')}
-              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
                 currentRole === 'admin'
-                  ? 'bg-surface-light dark:bg-surface-dark text-ink-primary shadow-ambient-sm'
-                  : 'text-ink-muted hover:text-ink-primary'
+                  ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-2xs'
+                  : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
               <span>🛡️</span>
@@ -126,15 +126,15 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             </button>
           </nav>
 
-          {/* Right Controls: User info & Actions */}
-          <div className="flex items-center gap-2.5">
+          {/* Right Controls */}
+          <div className="flex items-center gap-1.5">
             <button
               type="button"
               onClick={() => setIsPrivacyModalOpen(true)}
-              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-safety-darkText dark:text-safety bg-safety-subtle dark:bg-safety-subtleDark border border-safety/30"
+              className="hidden sm:flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-500/20"
               title="ميثاق المطابقة العمياء"
             >
-              <span className="w-2 h-2 rounded-full bg-safety inline-block"></span>
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block"></span>
               <span>مطابقة عمياء</span>
             </button>
 
@@ -142,7 +142,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               type="button"
               onClick={onToggleTheme}
               aria-label="تبديل المظهر"
-              className="p-2 rounded-xl bg-canvas-subtle dark:bg-canvas-subtleDark text-ink-muted dark:text-ink-inverseMuted hover:text-ink-primary dark:hover:text-white transition-colors"
+              className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors text-xs"
             >
               {isDark ? '☀️' : '🌙'}
             </button>
@@ -150,7 +150,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             <button
               type="button"
               onClick={onNavigateHome}
-              className="px-3 py-1.5 rounded-xl bg-canvas-subtle dark:bg-canvas-subtleDark hover:bg-slate-200 text-xs font-bold text-ink-muted hover:text-ink-primary transition-colors flex items-center gap-1"
+              className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 transition-colors flex items-center gap-1"
             >
               <span>🌐</span>
               <span className="hidden sm:inline">الرئيسية</span>
@@ -159,8 +159,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         </div>
       </header>
 
-      {/* Main Role Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Main Content */}
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-5 sm:py-6">
         {currentRole === 'parent' && <ParentPortal />}
         {currentRole === 'driver' && <DriverCockpit />}
         {currentRole === 'admin' && <AdminOperationsRadar />}

@@ -41,34 +41,14 @@ module.exports = {
         '32': '128px',
       },
       fontSize: {
-        'xs': [
-          'clamp(0.75rem, 0.71rem + 0.18vw, 0.84rem)',
-          { lineHeight: '1.6', letterSpacing: '0em' },
-        ],
-        'sm': [
-          'clamp(0.875rem, 0.83rem + 0.22vw, 0.98rem)',
-          { lineHeight: '1.65', letterSpacing: '0em' },
-        ],
-        'base': [
-          'clamp(1rem, 0.95rem + 0.25vw, 1.125rem)',
-          { lineHeight: '1.75', letterSpacing: '0em' },
-        ],
-        'lg': [
-          'clamp(1.25rem, 1.15rem + 0.45vw, 1.406rem)',
-          { lineHeight: '1.55', letterSpacing: '-0.01em' },
-        ],
-        'xl': [
-          'clamp(1.563rem, 1.40rem + 0.75vw, 1.758rem)',
-          { lineHeight: '1.4', letterSpacing: '-0.015em' },
-        ],
-        '2xl': [
-          'clamp(1.953rem, 1.72rem + 1.10vw, 2.197rem)',
-          { lineHeight: '1.3', letterSpacing: '-0.02em' },
-        ],
-        '3xl': [
-          'clamp(2.441rem, 2.10rem + 1.60vw, 2.747rem)',
-          { lineHeight: '1.2', letterSpacing: '-0.025em' },
-        ],
+        'xs': ['0.75rem', { lineHeight: '1.4', letterSpacing: '0em' }],
+        'sm': ['0.84rem', { lineHeight: '1.45', letterSpacing: '0em' }],
+        'base': ['0.92rem', { lineHeight: '1.5', letterSpacing: '0em' }],
+        'lg': ['1.05rem', { lineHeight: '1.45', letterSpacing: '-0.01em' }],
+        'xl': ['1.25rem', { lineHeight: '1.35', letterSpacing: '-0.015em' }],
+        '2xl': ['1.5rem', { lineHeight: '1.25', letterSpacing: '-0.02em' }],
+        '3xl': ['1.85rem', { lineHeight: '1.2', letterSpacing: '-0.025em' }],
+        '4xl': ['2.25rem', { lineHeight: '1.15', letterSpacing: '-0.025em' }],
       },
       colors: {
         canvas: {

@@ -438,64 +438,59 @@ export const ParentPortal: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      {/* City Switcher & Account Selector Header */}
-      <div className="p-6 rounded-3xl bg-surface-light dark:bg-surface-dark border border-surface-borderLight dark:border-surface-borderDark shadow-ambient-sm">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-surface-borderLight dark:border-surface-borderDark">
+    <div className="space-y-4 animate-fade-in">
+      {/* City Switcher & Account Selector Header: Compact, high density */}
+      <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200/80 dark:border-slate-800">
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-bus-dark dark:text-bus">
-                بوابة أولياء الأمور • حسابات تجريبية واقعية
+              <span className="text-[11px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400">
+                بوابة أولياء الأمور • الحسابات الميدانية
               </span>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-safety-subtle text-safety-darkText border border-safety/30">
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20">
                 مطابقة مؤكدة 100%
               </span>
             </div>
-            <h2 className="text-xl font-bold text-ink-primary dark:text-ink-inverse mt-1">
+            <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white mt-0.5">
               {activeFamily.fatherName} • {activeFamily.neighborhood} ({activeFamily.landmark})
             </h2>
-            <p className="text-xs text-ink-muted dark:text-ink-inverseMuted">
-              اختر عائلة ولي الأمر ثم اختر الطالب لمتابعة رحلته المباشرة وعقد الربط مع الكابتن
-            </p>
           </div>
 
           {/* City Selection Pills */}
-          <div className="flex items-center gap-2">
-            <div className="flex items-center p-1 rounded-2xl bg-canvas-subtle dark:bg-canvas-subtleDark border border-surface-borderLight dark:border-surface-borderDark">
-              <button
-                type="button"
-                onClick={() => handleSwitchCity('karbala')}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                  selectedCity === 'karbala'
-                    ? 'bg-bus text-slate-900 shadow-sm'
-                    : 'text-ink-muted hover:text-ink-primary'
-                }`}
-              >
-                🕌 كربلاء المقدسة
-              </button>
-              <button
-                type="button"
-                onClick={() => handleSwitchCity('baghdad')}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                  selectedCity === 'baghdad'
-                    ? 'bg-brand text-white shadow-sm'
-                    : 'text-ink-muted hover:text-ink-primary'
-                }`}
-              >
-                🏙️ بغداد العاصمة
-              </button>
-            </div>
+          <div className="flex items-center p-0.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shrink-0">
+            <button
+              type="button"
+              onClick={() => handleSwitchCity('karbala')}
+              className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
+                selectedCity === 'karbala'
+                  ? 'bg-amber-500 text-slate-950 shadow-2xs'
+                  : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'
+              }`}
+            >
+              🕌 كربلاء المقدسة
+            </button>
+            <button
+              type="button"
+              onClick={() => handleSwitchCity('baghdad')}
+              className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
+                selectedCity === 'baghdad'
+                  ? 'bg-blue-600 text-white shadow-2xs'
+                  : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'
+              }`}
+            >
+              🏙️ بغداد العاصمة
+            </button>
           </div>
         </div>
 
         {/* Karbala Demo Parent Family Switcher */}
         {selectedCity === 'karbala' && (
-          <div className="pt-4 space-y-2">
-            <span className="text-xs font-bold text-ink-muted dark:text-ink-inverseMuted flex items-center gap-1.5">
+          <div className="space-y-1.5">
+            <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-1">
               <span>👨‍👩‍👧‍👦</span>
-              <span>تبديل حساب ولي الأمر (3 عائلات تجريبية مختلفة العناوين بكربلاء):</span>
+              <span>تبديل حساب ولي الأمر (3 عائلات تجريبية بكربلاء):</span>
             </span>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
               {karbalaFamilies.map((fam) => {
                 const isFamActive = fam.id === activeFamily.id;
                 return (
@@ -503,23 +498,23 @@ export const ParentPortal: React.FC = () => {
                     key={fam.id}
                     type="button"
                     onClick={() => handleSelectFamily(fam.id)}
-                    className={`p-3.5 rounded-2xl border text-right transition-all flex flex-col justify-between gap-2 ${
+                    className={`p-2.5 rounded-xl border text-right transition-all flex items-center justify-between gap-2 ${
                       isFamActive
-                        ? 'bg-bus/10 border-bus text-slate-900 dark:text-white shadow-sm ring-2 ring-bus/20'
-                        : 'bg-canvas-subtle dark:bg-canvas-subtleDark border-surface-borderLight dark:border-surface-borderDark hover:border-slate-300'
+                        ? 'bg-amber-500/10 border-amber-500 text-slate-900 dark:text-white ring-1 ring-amber-500/30'
+                        : 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 hover:border-slate-300'
                     }`}
                   >
-                    <div className="flex items-center justify-between">
-                      <span className="font-bold text-xs sm:text-sm text-ink-primary dark:text-ink-inverse">
+                    <div className="min-w-0">
+                      <span className="font-semibold text-xs text-slate-900 dark:text-white truncate block">
                         {fam.fatherName}
                       </span>
-                      <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-surface-light dark:bg-surface-dark border">
-                        {fam.students.length} {fam.students.length > 1 ? 'أبناء' : 'ابنة'}
-                      </span>
+                      <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
+                        📍 {fam.neighborhood}
+                      </p>
                     </div>
-                    <p className="text-[11px] text-ink-muted dark:text-ink-inverseMuted truncate">
-                      📍 {fam.neighborhood} ({fam.landmark})
-                    </p>
+                    <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-white dark:bg-slate-900 border shrink-0">
+                      {fam.students.length} {fam.students.length > 1 ? 'أبناء' : 'ابنة'}
+                    </span>
                   </button>
                 );
               })}
@@ -528,12 +523,12 @@ export const ParentPortal: React.FC = () => {
         )}
 
         {/* Children of the Active Family */}
-        <div className="pt-4 space-y-2">
-          <span className="text-xs font-bold text-ink-muted dark:text-ink-inverseMuted flex items-center gap-1.5">
+        <div className="space-y-1.5">
+          <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-1">
             <span>🎒</span>
-            <span>أبناء وبنات {activeFamily.fatherName} المسجلين في الخطوط:</span>
+            <span>الأبناء المسجلون في الخطوط:</span>
           </span>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
             {students.map((student) => {
               const isSelected = student.id === selectedStudentId;
               return (
@@ -541,31 +536,31 @@ export const ParentPortal: React.FC = () => {
                   key={student.id}
                   type="button"
                   onClick={() => setSelectedStudentId(student.id)}
-                  className={`flex items-center gap-3.5 p-3.5 rounded-2xl border text-right transition-all ${
+                  className={`flex items-center gap-2.5 p-2.5 rounded-xl border text-right transition-all ${
                     isSelected
-                      ? 'bg-bus/15 border-bus shadow-ambient-sm ring-2 ring-bus/30'
-                      : 'bg-surface-light dark:bg-surface-dark border-surface-borderLight dark:border-surface-borderDark hover:border-slate-300'
+                      ? 'bg-blue-50 dark:bg-blue-950/30 border-blue-500 ring-1 ring-blue-500/20'
+                      : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-slate-300'
                   }`}
                 >
-                  <div className="w-11 h-11 rounded-2xl bg-canvas-subtle dark:bg-canvas-subtleDark flex items-center justify-center text-2xl shadow-inner shrink-0">
+                  <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-lg shadow-inner shrink-0">
                     {student.avatar}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-1">
-                      <p className={`font-bold text-xs sm:text-sm truncate ${isSelected ? 'text-brand dark:text-white' : 'text-ink-primary dark:text-ink-inverse'}`}>
+                      <p className={`font-semibold text-xs truncate ${isSelected ? 'text-blue-600 dark:text-blue-400' : 'text-slate-900 dark:text-white'}`}>
                         {student.name}
                       </p>
                       {student.isTodayAbsent ? (
-                        <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-alert-crimsonSubtle text-alert-crimson">
+                        <span className="px-1 py-0.2 rounded text-[9px] font-bold bg-red-100 dark:bg-red-950/40 text-red-600">
                           غائب
                         </span>
                       ) : (
-                        <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-safety-subtle text-safety-darkText">
+                        <span className="px-1 py-0.2 rounded text-[9px] font-bold bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700">
                           نشط
                         </span>
                       )}
                     </div>
-                    <p className="text-[11px] text-ink-muted dark:text-ink-inverseMuted truncate">
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
                       {student.school}
                     </p>
                   </div>
@@ -576,23 +571,23 @@ export const ParentPortal: React.FC = () => {
         </div>
 
         {/* Mutual Agreement & Seat Confirmation Card */}
-        <div className="mt-5 p-4 rounded-2xl bg-canvas-subtle dark:bg-canvas-subtleDark border border-surface-borderLight dark:border-surface-borderDark space-y-3">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-safety/20 text-safety flex items-center justify-center text-xl shrink-0 font-bold">
+        <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 space-y-2">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center text-base shrink-0 font-bold">
                 📜
               </div>
               <div>
-                <div className="flex items-center gap-2">
-                  <span className="font-bold text-xs sm:text-sm text-ink-primary dark:text-ink-inverse">
-                    عقد النقل المتبادل وتثبيت المقعد مع {activeFamily.captainAgreement.captainName}
+                <div className="flex items-center gap-1.5">
+                  <span className="font-semibold text-xs text-slate-900 dark:text-white">
+                    عقد النقل وتثبيت المقعد مع {activeFamily.captainAgreement.captainName}
                   </span>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-safety-subtle text-safety-darkText border border-safety/30">
-                    اتفاق ساري وموثّق ✅
+                  <span className="px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700 border border-emerald-500/20">
+                    موثّق ✅
                   </span>
                 </div>
-                <p className="text-[11px] text-ink-muted dark:text-ink-inverseMuted mt-0.5">
-                  المركبة: {activeFamily.captainAgreement.vehicleModel} • {activeFamily.captainAgreement.vehiclePlate}
+                <p className="text-[10px] text-slate-500 dark:text-slate-400">
+                  {activeFamily.captainAgreement.vehicleModel} • {activeFamily.captainAgreement.vehiclePlate}
                 </p>
               </div>
             </div>
@@ -600,55 +595,55 @@ export const ParentPortal: React.FC = () => {
             <button
               type="button"
               onClick={() => setIsAgreementDetailsOpen(!isAgreementDetailsOpen)}
-              className="px-3.5 py-2 rounded-xl bg-surface-light dark:bg-surface-dark hover:bg-slate-200 text-xs font-bold text-ink-secondary border border-surface-borderLight transition-colors self-start sm:self-auto"
+              className="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-900 hover:bg-slate-100 text-[11px] font-semibold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 transition-colors self-start sm:self-auto"
             >
-              {isAgreementDetailsOpen ? 'إخفاء بنود الاتفاق ▲' : 'عرض تفاصيل الاتفاق والمسار ▼'}
+              {isAgreementDetailsOpen ? 'إخفاء التفاصيل ▲' : 'تفاصيل العقد والمسار ▼'}
             </button>
           </div>
 
           {isAgreementDetailsOpen && (
-            <div className="p-4 rounded-xl bg-surface-light dark:bg-surface-dark border border-surface-borderLight space-y-2.5 text-xs text-ink-primary dark:text-ink-inverse animate-fade-in">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pb-2 border-b border-surface-borderLight dark:border-surface-borderDark">
+            <div className="p-2.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-2 text-[11px] text-slate-800 dark:text-slate-200 animate-fade-in">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pb-2 border-b border-slate-100 dark:border-slate-800">
                 <div>
-                  <span className="text-ink-muted">المسار المعتمد للخط:</span>
-                  <p className="font-semibold text-slate-800 dark:text-slate-200 mt-0.5">
+                  <span className="text-slate-500">مسار الخط المعتمد:</span>
+                  <p className="font-medium text-slate-900 dark:text-white mt-0.5">
                     {activeFamily.captainAgreement.routeDescription}
                   </p>
                 </div>
                 <div>
-                  <span className="text-ink-muted">القسط الشهري المتفق عليه:</span>
-                  <p className="font-semibold text-safety-darkText dark:text-safety mt-0.5">
+                  <span className="text-slate-500">القسط المتفق عليه:</span>
+                  <p className="font-semibold text-emerald-600 dark:text-emerald-400 mt-0.5">
                     {activeFamily.captainAgreement.monthlyFee}
                   </p>
                 </div>
               </div>
-              <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] text-ink-muted">
-                <span>🛡️ فحص جنائي معتمد (KYC) للسائق مع فحص سنوية وإجازة سوق المرور</span>
-                <span className="text-brand font-semibold">حماية كاملة لأرقام الهواتف (Blind Matching)</span>
+              <div className="flex flex-wrap items-center justify-between gap-2 text-[10px] text-slate-500">
+                <span>🛡️ فحص جنائي معتمد (KYC) + سنوية وإجازة سوق</span>
+                <span className="text-blue-600 dark:text-blue-400 font-medium">أرقام الهواتف مشفرة (Blind Matching)</span>
               </div>
             </div>
           )}
         </div>
 
-        {/* Live GPS Hardware Simulation Banner */}
-        <div className="mt-4 p-4 rounded-2xl bg-gradient-to-r from-bus/15 via-safety/10 to-brand/15 border border-bus/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
-          <div className="flex items-center gap-3.5">
-            <div className="w-11 h-11 rounded-2xl bg-bus text-slate-900 flex items-center justify-center text-2xl font-bold shrink-0 shadow-sm">
+        {/* Live GPS Hardware Simulation Banner: Slim & Compact */}
+        <div className="p-3 rounded-xl bg-gradient-to-r from-amber-500/10 via-emerald-500/10 to-blue-500/10 border border-amber-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-amber-500 text-slate-950 flex items-center justify-center text-base font-bold shrink-0 shadow-2xs">
               🛰️
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <span className="font-bold text-sm text-ink-primary dark:text-ink-inverse">
-                  محاكي جهاز التتبع الميداني (Traccar Live GPS Simulator)
+              <div className="flex items-center gap-1.5">
+                <span className="font-bold text-xs text-slate-900 dark:text-white">
+                  محاكي جهاز التتبع الميداني (Traccar Live GPS)
                 </span>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-bus text-slate-900">
-                  {selectedCity === 'karbala' ? 'كربلاء المقدسة' : 'بغداد'}
+                <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-amber-500 text-slate-950">
+                  {selectedCity === 'karbala' ? 'كربلاء' : 'بغداد'}
                 </span>
               </div>
-              <p className="text-xs text-ink-muted dark:text-ink-inverseMuted mt-0.5">
+              <p className="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5">
                 {isSimulating
-                  ? 'الحافلة تتحرك فعلياً الآن في شوارع كربلاء (بث الإحداثيات كل ثانيتين عبر الخريطة والـ HUD وتحديث المسافة)'
-                  : 'لا تحتاج لسيارة حقيقية الآن! انقر الزر لترى الحافلة تنطلق وتقترب من المنزل وتتجاوز السياج 500م'}
+                  ? 'الحافلة تتحرك فعلياً الآن في شوارع كربلاء (بث الإحداثيات كل ثانيتين وتحديث المسافة وسياج 500م)'
+                  : 'اضغط لتشغيل محاكاة سير الحافلة في كربلاء واختبار تنبيه الـ 500 متر دون الحاجة لسيارة حقيقية'}
               </p>
             </div>
           </div>
@@ -656,28 +651,28 @@ export const ParentPortal: React.FC = () => {
           <button
             type="button"
             onClick={() => setIsSimulating(!isSimulating)}
-            className={`px-5 py-3 rounded-2xl text-xs sm:text-sm font-bold shadow-md transition-all shrink-0 flex items-center justify-center gap-2 ${
+            className={`h-9 px-4 rounded-xl text-xs font-semibold shadow-sm transition-all shrink-0 flex items-center justify-center gap-1.5 ${
               isSimulating
-                ? 'bg-alert-crimson hover:bg-red-700 text-white animate-pulse'
-                : 'bg-safety hover:bg-safety-hover text-white shadow-ambient-safety'
+                ? 'bg-red-600 hover:bg-red-700 text-white animate-pulse'
+                : 'bg-emerald-600 hover:bg-emerald-700 text-white'
             }`}
           >
-            <span>{isSimulating ? '⏸️ إيقاف محاكاة GPS' : '▶️ تشغيل محاكاة سير الحافلة في كربلاء'}</span>
+            <span>{isSimulating ? '⏸️ إيقاف المحاكاة' : '▶️ تشغيل محاكاة سير الحافلة'}</span>
           </button>
         </div>
       </div>
 
-      {/* Action Notice (Dismissible without setTimeout) */}
+      {/* Action Notice */}
       {actionSuccessNotice && (
-        <div className="p-4 rounded-2xl bg-safety-subtle border border-safety/30 text-safety-darkText flex items-center justify-between gap-3 shadow-ambient-sm">
-          <div className="flex items-center gap-2 text-sm font-medium">
+        <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-500/30 text-emerald-800 dark:text-emerald-300 flex items-center justify-between gap-2 shadow-2xs text-xs">
+          <div className="flex items-center gap-1.5">
             <span>✅</span>
             <span>{actionSuccessNotice}</span>
           </div>
           <button
             type="button"
             onClick={() => setActionSuccessNotice(null)}
-            className="text-xs font-bold hover:underline px-2 py-1"
+            className="text-[11px] font-bold hover:underline px-1.5 py-0.5"
           >
             إغلاق
           </button>
@@ -685,26 +680,26 @@ export const ParentPortal: React.FC = () => {
       )}
 
       {/* Main Grid: Tracking Radar + Milestone Journey Stepper */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Left 2 Cols: Live Telemetry Card & Map HUD */}
-        <div className="lg:col-span-2 space-y-6">
-          <div className="p-6 sm:p-8 rounded-3xl bg-surface-light dark:bg-surface-dark border border-surface-borderLight dark:border-surface-borderDark shadow-ambient-md space-y-6">
-            <div className="flex flex-wrap items-center justify-between gap-4">
+        <div className="lg:col-span-2 space-y-4">
+          <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4">
+            <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
-                <span className="text-xs font-bold tracking-wider uppercase text-bus-dark dark:text-bus">
-                  التتبع الجغرافي اللحظي المباشر
+                <span className="text-[10px] font-bold tracking-wider uppercase text-amber-700 dark:text-amber-400">
+                  التتبع الجغرافي اللحظي
                 </span>
-                <h3 className="text-2xl font-bold text-ink-primary dark:text-ink-inverse mt-1">
+                <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
                   رحلة {activeStudent.name}
                 </h3>
-                <p className="text-xs text-ink-muted dark:text-ink-inverseMuted">
+                <p className="text-[11px] text-slate-500 dark:text-slate-400">
                   {activeStudent.school} • {activeStudent.grade}
                 </p>
               </div>
 
               {/* Status pill */}
-              <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-safety-subtle dark:bg-safety-subtleDark border border-safety/30 text-safety-darkText dark:text-safety text-xs font-bold">
-                <span className="w-2.5 h-2.5 rounded-full bg-safety animate-pulse"></span>
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-xs font-semibold">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                 <span>الحافلة تتحرك باتجاه المدرسة</span>
               </div>
             </div>
@@ -727,20 +722,20 @@ export const ParentPortal: React.FC = () => {
                 name: activeStudent.school,
               }}
               geofenceRadiusMeters={500}
-              heightClassName="h-80 sm:h-96"
+              heightClassName="h-64 sm:h-80"
             />
 
             {/* Driver Profile & Vehicle info */}
-            <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl bg-canvas-subtle dark:bg-canvas-subtleDark border border-surface-borderLight dark:border-surface-borderDark">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-bus-subtle dark:bg-bus-subtleDark text-bus-dark flex items-center justify-center text-xl font-bold">
+            <div className="flex flex-wrap items-center justify-between gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-700 dark:text-amber-300 flex items-center justify-center text-base font-bold">
                   👨‍✈️
                 </div>
                 <div>
-                  <h4 className="font-bold text-sm text-ink-primary dark:text-ink-inverse">
+                  <h4 className="font-semibold text-xs text-slate-900 dark:text-white">
                     {activeStudent.driverName}
                   </h4>
-                  <p className="text-xs text-ink-muted dark:text-ink-inverseMuted">
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
                     {activeStudent.vehicleModel} • {activeStudent.vehiclePlate}
                   </p>
                 </div>
@@ -749,7 +744,7 @@ export const ParentPortal: React.FC = () => {
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  className="px-4 py-2 rounded-xl bg-surface-light dark:bg-surface-dark border border-surface-borderLight dark:border-surface-borderDark hover:bg-canvas-subtle text-ink-secondary dark:text-ink-inverseMuted text-xs font-semibold shadow-sm transition-colors flex items-center gap-1.5"
+                  className="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 text-slate-700 dark:text-slate-200 text-xs font-semibold transition-colors flex items-center gap-1 shadow-2xs"
                 >
                   <span>📞</span>
                   <span>اتصال مشفر</span>
@@ -759,64 +754,64 @@ export const ParentPortal: React.FC = () => {
           </div>
 
           {/* Absence Reporting Card (One-Tap Leave Request) */}
-          <div className="p-6 rounded-3xl bg-surface-light dark:bg-surface-dark border border-surface-borderLight dark:border-surface-borderDark shadow-ambient-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="p-3.5 sm:p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <h4 className="font-bold text-base text-ink-primary dark:text-ink-inverse flex items-center gap-2">
+              <h4 className="font-semibold text-xs sm:text-sm text-slate-900 dark:text-white flex items-center gap-1.5">
                 <span>🚫</span>
                 <span>طلب إعفاء وتثبيت غياب اليوم</span>
               </h4>
-              <p className="text-xs sm:text-sm text-ink-muted dark:text-ink-inverseMuted mt-1">
-                في حال كان الطالب مريضاً أو مجازاً، انقر الزر لإشعار السائق فوراً دون الحاجة للاتصال به صباحاً.
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                في حال كان الطالب مريضاً، انقر الزر لإشعار السائق فوراً لتجاوز نقطة التوقف.
               </p>
             </div>
 
             <button
               type="button"
               onClick={handleToggleAbsence}
-              className={`px-5 py-3 rounded-2xl font-bold text-xs sm:text-sm transition-all duration-200 shrink-0 shadow-sm ${
+              className={`h-9 px-4 rounded-xl font-semibold text-xs transition-all shrink-0 shadow-2xs ${
                 activeStudent.isTodayAbsent
-                  ? 'bg-safety hover:bg-safety-hover text-white shadow-ambient-safety'
-                  : 'bg-alert-crimson hover:bg-red-700 text-white shadow-ambient-sm'
+                  ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                  : 'bg-red-600 hover:bg-red-700 text-white'
               }`}
             >
-              {activeStudent.isTodayAbsent ? 'إلغاء الغياب (ابني سيذهب)' : 'ابني غائب اليوم (لا تمر بالمنزل)'}
+              {activeStudent.isTodayAbsent ? 'إلغاء الغياب (ابني سيذهب)' : 'ابني غائب اليوم (تجاوز المنزل)'}
             </button>
           </div>
         </div>
 
         {/* Right 1 Col: Milestone Stepper & Authorized Delegates */}
-        <div className="space-y-6">
-          {/* Milestone Stepper */}
-          <div className="p-6 rounded-3xl bg-surface-light dark:bg-surface-dark border border-surface-borderLight dark:border-surface-borderDark shadow-ambient-md space-y-6">
-            <h4 className="font-bold text-base text-ink-primary dark:text-ink-inverse flex items-center gap-2 pb-3 border-b border-surface-borderLight dark:border-surface-borderDark">
+        <div className="space-y-4">
+          {/* Milestone Stepper: Compact */}
+          <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4">
+            <h4 className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white flex items-center gap-1.5 pb-2 border-b border-slate-100 dark:border-slate-800">
               <span>📍</span>
               <span>مراحل الرحلة الحية</span>
             </h4>
 
-            <div className="relative space-y-6">
+            <div className="relative space-y-4">
               {stages.map((stage, idx) => {
                 const isPassed = stage.num < activeStudent.currentStage;
                 const isCurrent = stage.num === activeStudent.currentStage;
 
                 return (
-                  <div key={stage.num} className="relative flex items-start gap-4">
+                  <div key={stage.num} className="relative flex items-start gap-3">
                     {/* Vertical connector line */}
                     {idx < stages.length - 1 && (
                       <div
-                        className={`absolute right-4 top-8 -bottom-4 w-0.5 ${
-                          isPassed ? 'bg-safety' : 'bg-slate-200 dark:bg-slate-800'
+                        className={`absolute right-3.5 top-6 -bottom-3 w-0.5 ${
+                          isPassed ? 'bg-emerald-500' : 'bg-slate-200 dark:bg-slate-800'
                         }`}
                       ></div>
                     )}
 
                     {/* Step Circle Indicator */}
                     <div
-                      className={`relative z-10 w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all shrink-0 ${
+                      className={`relative z-10 w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold transition-all shrink-0 ${
                         isPassed
-                          ? 'bg-safety text-white shadow-ambient-safety'
+                          ? 'bg-emerald-600 text-white'
                           : isCurrent
-                          ? 'bg-bus text-slate-900 ring-4 ring-bus/20 animate-pulse'
-                          : 'bg-canvas-subtle dark:bg-canvas-subtleDark text-ink-muted border border-surface-borderLight dark:border-surface-borderDark'
+                          ? 'bg-amber-500 text-slate-950 ring-2 ring-amber-500/20 animate-pulse'
+                          : 'bg-slate-100 dark:bg-slate-800 text-slate-400 border border-slate-200 dark:border-slate-700'
                       }`}
                     >
                       {isPassed ? '✓' : stage.num}
@@ -825,17 +820,17 @@ export const ParentPortal: React.FC = () => {
                     {/* Text Details */}
                     <div>
                       <p
-                        className={`text-sm font-bold ${
+                        className={`text-xs font-semibold ${
                           isCurrent
-                            ? 'text-bus-dark dark:text-bus'
+                            ? 'text-amber-700 dark:text-amber-400'
                             : isPassed
-                            ? 'text-ink-primary dark:text-ink-inverse'
-                            : 'text-ink-muted dark:text-ink-inverseMuted'
+                            ? 'text-slate-900 dark:text-white'
+                            : 'text-slate-400 dark:text-slate-500'
                         }`}
                       >
                         {stage.label}
                       </p>
-                      <p className="text-xs text-ink-muted dark:text-ink-inverseMuted mt-0.5">
+                      <p className="text-[10px] text-slate-500 dark:text-slate-400">
                         {stage.desc}
                       </p>
                     </div>
@@ -845,35 +840,35 @@ export const ParentPortal: React.FC = () => {
             </div>
           </div>
 
-          {/* Authorized Delegates (المفوّضون بالاستلام) */}
-          <div className="p-6 rounded-3xl bg-surface-light dark:bg-surface-dark border border-surface-borderLight dark:border-surface-borderDark shadow-ambient-sm space-y-4">
-            <div className="flex items-center justify-between pb-2 border-b border-surface-borderLight dark:border-surface-borderDark">
-              <h4 className="font-bold text-sm text-ink-primary dark:text-ink-inverse flex items-center gap-1.5">
+          {/* Authorized Delegates */}
+          <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
+            <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
+              <h4 className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white flex items-center gap-1.5">
                 <span>👥</span>
                 <span>المفوّضون باستلام الطالب</span>
               </h4>
-              <span className="text-[10px] font-bold text-brand bg-brand/10 px-2 py-0.5 rounded-md">
+              <span className="text-[9px] font-bold text-blue-600 bg-blue-50 dark:bg-blue-950/40 px-1.5 py-0.5 rounded">
                 {activeFamily.neighborhood}
               </span>
             </div>
 
-            <div className="space-y-2.5 text-xs">
-              <div className="flex items-center justify-between p-2.5 rounded-xl bg-canvas-subtle dark:bg-canvas-subtleDark">
+            <div className="space-y-1.5 text-xs">
+              <div className="flex items-center justify-between p-2 rounded-lg bg-slate-50 dark:bg-slate-800/50">
                 <div>
-                  <p className="font-bold text-ink-primary dark:text-ink-inverse">{activeFamily.fatherName}</p>
-                  <p className="text-ink-muted dark:text-ink-inverseMuted">{activeFamily.fatherPhone} • مفوّض دائم</p>
+                  <p className="font-semibold text-slate-900 dark:text-white text-xs">{activeFamily.fatherName}</p>
+                  <p className="text-slate-500 text-[10px]">{activeFamily.fatherPhone} • مفوّض دائم</p>
                 </div>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-safety-subtle text-safety-darkText">
+                <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700">
                   موثّق
                 </span>
               </div>
 
-              <div className="flex items-center justify-between p-2.5 rounded-xl bg-canvas-subtle dark:bg-canvas-subtleDark">
+              <div className="flex items-center justify-between p-2 rounded-lg bg-slate-50 dark:bg-slate-800/50">
                 <div>
-                  <p className="font-bold text-ink-primary dark:text-ink-inverse">{activeFamily.motherName}</p>
-                  <p className="text-ink-muted dark:text-ink-inverseMuted">{activeFamily.motherPhone} • مفوّض دائم</p>
+                  <p className="font-semibold text-slate-900 dark:text-white text-xs">{activeFamily.motherName}</p>
+                  <p className="text-slate-500 text-[10px]">{activeFamily.motherPhone} • مفوّض دائم</p>
                 </div>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-safety-subtle text-safety-darkText">
+                <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700">
                   موثّق
                 </span>
               </div>
@@ -881,25 +876,25 @@ export const ParentPortal: React.FC = () => {
           </div>
 
           {/* Subscription Tier & Billing */}
-          <div className="p-6 rounded-3xl bg-gradient-to-br from-slate-900 to-slate-800 text-white shadow-ambient-md space-y-4">
+          <div className="p-4 rounded-2xl bg-slate-900 text-white shadow-2xs space-y-2.5">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-bus/20 text-bus border border-bus/30">
+              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
                 باقة النقل المدرسي الشاملة
               </span>
-              <span className="text-xs text-slate-400">تشرين الثاني 2026</span>
+              <span className="text-[10px] text-slate-400">تشرين الثاني 2026</span>
             </div>
 
             <div>
-              <p className="text-2xl font-bold">{activeFamily.captainAgreement.monthlyFee}</p>
-              <p className="text-xs text-slate-300 mt-1">ذهاب وإياب • مكيف بالكامل • تأمين ركاب</p>
+              <p className="text-lg font-bold text-white">{activeFamily.captainAgreement.monthlyFee}</p>
+              <p className="text-[10px] text-slate-300">ذهاب وإياب • مكيف • تأمين ركاب</p>
             </div>
 
-            <div className="pt-2 border-t border-slate-700/60 flex items-center justify-between text-xs">
-              <span className="text-safety flex items-center gap-1">
-                <span>●</span> تم الدفع وتثبيت المقعد
+            <div className="pt-2 border-t border-slate-800 flex items-center justify-between text-[11px]">
+              <span className="text-emerald-400 flex items-center gap-1">
+                <span>●</span> المقعد مثبت بنجاح
               </span>
               <button type="button" className="text-sky-300 hover:underline">
-                تحميل الفاتورة PDF
+                الفاتورة PDF
               </button>
             </div>
           </div>
