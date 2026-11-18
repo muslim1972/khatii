@@ -13,6 +13,7 @@ interface DriverKYC {
 }
 
 const mockKYCList: DriverKYC[] = [
+  { id: 'kyc-0', name: 'أبو كرار الكربلائي', phoneEncrypted: '0780••••319', vehicleModel: 'تويوتا هايس 2023', plateNumber: 'كربلاء 38190 أجور', docsStatus: 'verified', appliedDate: '2026-11-01' },
   { id: 'kyc-1', name: 'أبو حيدر الساعدي', phoneEncrypted: '0770••••192', vehicleModel: 'تويوتا هايس 2022', plateNumber: 'بغداد 48192 خصوصي', docsStatus: 'verified', appliedDate: '2026-11-01' },
   { id: 'kyc-2', name: 'مصطفى الربيعي', phoneEncrypted: '0780••••841', vehicleModel: 'كيا موهافي 2021', plateNumber: 'بغداد 19024 أجور', docsStatus: 'verified', appliedDate: '2026-11-04' },
   { id: 'kyc-3', name: 'كرار فاضل الموسوي', phoneEncrypted: '0772••••309', vehicleModel: 'هيونداي H1 2023', plateNumber: 'كربلاء 33118 خصوصي', docsStatus: 'review', appliedDate: '2026-11-14' },

@@ -13,11 +13,11 @@ interface ManifestItem {
 }
 
 const initialManifest: ManifestItem[] = [
-  { id: 'm-1', name: 'زينب أحمد الكرخي', stopName: 'اليرموك - مجاور مأكولات الرواد', order: 1, status: 'boarded', isExcused: false },
-  { id: 'm-2', name: 'عمر ياسين الدليمي', stopName: 'حي الجامعة - شارع الربيع', order: 2, status: 'pending', isExcused: false },
-  { id: 'm-3', name: 'مريم حيدر الخفاجي', stopName: 'حي الخضراء - تقاطع السدرة', order: 3, status: 'absent', isExcused: true },
-  { id: 'm-4', name: 'سيف علي الجبوري', stopName: 'الداوودي - خلف جامع الفرقان', order: 4, status: 'pending', isExcused: false },
-  { id: 'm-5', name: 'نور مصطفى العامري', stopName: 'المنصور - 14 رمضان', order: 5, status: 'pending', isExcused: false },
+  { id: 'm-1', name: 'سجاد حيدر الحسيني', stopName: 'كربلاء - حي الحسين (قرب جامع أهل البيت)', order: 1, status: 'boarded', isExcused: false },
+  { id: 'm-2', name: 'زينب حيدر الحسيني', stopName: 'كربلاء - حي الحسين (محطة الفواطم)', order: 2, status: 'boarded', isExcused: false },
+  { id: 'm-3', name: 'باقر علي الموسوي', stopName: 'كربلاء - حي المعلمين (شارع الكوثر)', order: 3, status: 'pending', isExcused: false },
+  { id: 'm-4', name: 'كرار علي الموسوي', stopName: 'كربلاء - حي المعلمين (قرب مدرسة الفرات)', order: 4, status: 'absent', isExcused: true },
+  { id: 'm-5', name: 'مريم قاسم العامري', stopName: 'كربلاء - حي الإسكان (مجاور المستشفى العام)', order: 5, status: 'pending', isExcused: false },
 ];
 
 export const DriverCockpit: React.FC = () => {
@@ -45,14 +45,14 @@ export const DriverCockpit: React.FC = () => {
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-xl font-bold text-ink-primary dark:text-ink-inverse">
-                كابينة الكابتن • أبو حيدر الساعدي
+                كابينة الكابتن • أبو كرار الكربلائي
               </h2>
               <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-safety-subtle text-safety-darkText border border-safety/30">
                 سائق معتمد 🛡️
               </span>
             </div>
             <p className="text-xs sm:text-sm text-ink-muted dark:text-ink-inverseMuted">
-              خط ثانوية المتميزات الأولى (صباحي) • الحافلة: تويوتا هايس 48192
+              خط ثانوية الذرى للمتميزين - كربلاء • الحافلة: تويوتا هايس 38190 كربلاء أجور
             </p>
           </div>
         </div>
@@ -110,7 +110,7 @@ export const DriverCockpit: React.FC = () => {
         <div className="p-4 rounded-2xl bg-surface-light dark:bg-surface-dark border border-surface-borderLight dark:border-surface-borderDark shadow-sm text-center">
           <div className="text-xs text-ink-muted dark:text-ink-inverseMuted font-medium">المحطة القادمة</div>
           <div className="text-base font-bold text-bus-dark dark:text-bus truncate mt-1">
-            شارع الربيع (عمر)
+            حي المعلمين (باقر الموسوي)
           </div>
         </div>
 
@@ -127,14 +127,14 @@ export const DriverCockpit: React.FC = () => {
         <div className="flex items-center justify-between">
           <h3 className="text-base font-bold text-ink-primary dark:text-ink-inverse flex items-center gap-2">
             <span>🗺️</span>
-            <span>خريطة الملاحة الحية ومسار التوقفات (بث Traccar & GPS)</span>
+            <span>خريطة الملاحة الحية ومسار التوقفات (بث كربلاء المقدسة Traccar & GPS)</span>
           </h3>
           <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-bus-subtle text-bus-dark">
             تحديث تلقائي 60fps
           </span>
         </div>
         <KhattiInteractiveMap
-          busLocation={{ lat: 33.3152, lng: 44.3661, speed: 34 }}
+          busLocation={{ lat: 32.6095, lng: 44.0115, speed: 28 }}
           heightClassName="h-72 sm:h-88"
         />
       </div>

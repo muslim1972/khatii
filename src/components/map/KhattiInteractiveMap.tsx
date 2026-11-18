@@ -45,10 +45,13 @@ export const KhattiInteractiveMap: React.FC<KhattiInteractiveMapProps> = ({
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const busMarkerRef = useRef<maplibregl.Marker | null>(null);
+  const homeMarkerRef = useRef<maplibregl.Marker | null>(null);
+  const schoolMarkerRef = useRef<maplibregl.Marker | null>(null);
 
   const [activeStyle, setActiveStyle] = useState<'voyager' | 'osm' | 'dark'>('voyager');
   const [cachedTiles, setCachedTiles] = useState<number>(0);
   const [isOnline, setIsOnline] = useState<boolean>(true);
+  const [autoFollow, setAutoFollow] = useState<boolean>(true);
   const [cacheNotice, setCacheNotice] = useState<string | null>(null);
 
   // Helper to create GeoJSON circle for 500m geofence
@@ -173,9 +176,10 @@ export const KhattiInteractiveMap: React.FC<KhattiInteractiveMapProps> = ({
           ●
         </div>
       `;
-      new maplibregl.Marker({ element: homeEl })
+      const homeMarker = new maplibregl.Marker({ element: homeEl })
         .setLngLat([homeLocation.lng, homeLocation.lat])
         .addTo(map);
+      homeMarkerRef.current = homeMarker;
 
       // Add School Marker
       const schoolEl = document.createElement('div');
@@ -188,9 +192,10 @@ export const KhattiInteractiveMap: React.FC<KhattiInteractiveMapProps> = ({
           🎓
         </div>
       `;
-      new maplibregl.Marker({ element: schoolEl })
+      const schoolMarker = new maplibregl.Marker({ element: schoolEl })
         .setLngLat([schoolLocation.lng, schoolLocation.lat])
         .addTo(map);
+      schoolMarkerRef.current = schoolMarker;
 
       // Add Bus Marker with Heading Pulse
       const busEl = document.createElement('div');
@@ -217,12 +222,45 @@ export const KhattiInteractiveMap: React.FC<KhattiInteractiveMapProps> = ({
     };
   }, []);
 
-  // Sync Bus Location updates
+  // Sync Bus Location updates & Auto-follow
   useEffect(() => {
     if (busMarkerRef.current) {
       busMarkerRef.current.setLngLat([busLocation.lng, busLocation.lat]);
     }
-  }, [busLocation.lat, busLocation.lng]);
+    if (mapRef.current && autoFollow) {
+      mapRef.current.easeTo({
+        center: [busLocation.lng, busLocation.lat],
+        duration: 1000,
+      });
+    }
+  }, [busLocation.lat, busLocation.lng, autoFollow]);
+
+  // Sync Home, School, and Geofence when switching student/city
+  useEffect(() => {
+    if (homeMarkerRef.current) {
+      homeMarkerRef.current.setLngLat([homeLocation.lng, homeLocation.lat]);
+    }
+    if (schoolMarkerRef.current) {
+      schoolMarkerRef.current.setLngLat([schoolLocation.lng, schoolLocation.lat]);
+    }
+
+    if (mapRef.current) {
+      const map = mapRef.current;
+      // Re-center when city or major coordinates change
+      map.flyTo({
+        center: [busLocation.lng, busLocation.lat],
+        zoom: 14,
+        speed: 1.4,
+      });
+
+      // Update Geofence polygon
+      const geofenceSource = map.getSource('geofence-500m') as maplibregl.GeoJSONSource | undefined;
+      if (geofenceSource) {
+        const circleGeoJson = createGeoJsonCircle([homeLocation.lng, homeLocation.lat], geofenceRadiusMeters / 1000);
+        geofenceSource.setData(circleGeoJson);
+      }
+    }
+  }, [homeLocation.lat, homeLocation.lng, schoolLocation.lat, schoolLocation.lng]);
 
   // Handle Style Switch
   const handleSwitchStyle = (style: 'voyager' | 'osm' | 'dark') => {
@@ -321,8 +359,21 @@ export const KhattiInteractiveMap: React.FC<KhattiInteractiveMapProps> = ({
           </button>
         </div>
 
-        {/* Actions: Recenter & Cache Clear */}
+        {/* Actions: Recenter, Auto-follow & Cache Clear */}
         <div className="pointer-events-auto flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setAutoFollow(!autoFollow)}
+            className={`px-2.5 py-1.5 rounded-2xl font-bold transition-all ${
+              autoFollow
+                ? 'bg-safety text-white shadow-ambient-safety'
+                : 'bg-slate-800 text-slate-400 hover:text-white'
+            }`}
+            title="تفعيل/تعطيل تحريك الكاميرا تلقائياً مع حركة الحافلة"
+          >
+            {autoFollow ? '📹 تتبع الكاميرا' : '📹 تثبيت الكاميرا'}
+          </button>
+
           <button
             type="button"
             onClick={handleRecenterBus}
